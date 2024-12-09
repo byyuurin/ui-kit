@@ -12,12 +12,12 @@ export type ParseString<T, InferValue, TrueType, FalseType = string> = T extends
 
 export type StringToBoolean<T> = ParseString<T, 'true' | 'false', boolean, T>
 
-export type Stringify<T> = T extends Record<string, unknown>
+export type Simplify<T> = T extends Record<string, unknown>
   ? { [K in keyof T as T[K] extends undefined | null ? never : K]: K extends keyof ClassProp
       ? string | string[]
-      : Stringify<T[K]> }
+      : Simplify<T[K]> }
   : T extends Array<infer V>
-    ? Array<Stringify<V>>
+    ? Array<Simplify<V>>
     : T
 
 /* types
@@ -64,7 +64,11 @@ export type CPCompoundVariants<
     [K in keyof V]?:
       | (K extends keyof V ? StringToBoolean<keyof V[K]> : never)
       | (K extends keyof V ? StringToBoolean<keyof V[K]>[] : never)
-  } & ClassProp<SlotsClassValue<S, B> | ClassValue>
+  } & (
+    B extends undefined
+      ? ClassProp<SlotsClassValue<S, B>>
+      : ClassProp<SlotsClassValue<S, B> | ClassValue>
+  )
 >
 
 export type CPDefaultVariants<
@@ -88,7 +92,7 @@ export interface CPReturnProps<
   S extends CPSlots,
   B extends ClassValue,
 > {
-  theme: Stringify<{
+  theme: Simplify<{
     base: B
     slots: B extends undefined ? S : S & { base: string }
     variants: V

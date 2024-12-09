@@ -61,7 +61,6 @@ export function cp<
 
   const component = handler as unknown as CPReturnType<V, S, B>
 
-  // TODO: improve types
   component.theme = {
     base,
     slots,
@@ -244,7 +243,7 @@ function getCompoundVariantClassValue(
   const getCompleteProps = (key: string, slotProps: CPProps<any, any>) => {
     const _props = props as unknown as Record<string, any>
     const initialProp = typeof _props?.[key] === 'object'
-      ? { [key]: _props[key]?.initial }
+      ? { [key]: _props[key] }
       : {}
     const result: Record<string, any> = {
       ...defaultVariants,
