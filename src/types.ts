@@ -22,42 +22,41 @@ export type Simplify<T> = T extends Record<string, unknown>
 
 /* types
 ---------------------------------------- */
-
 export type ClassProp<V = ClassValue> =
   | { class?: V, className?: never }
   | { class?: never, className?: V }
 
-export type CPSlots = Record<string, ClassValue> | undefined
+export type CVSlots = Record<string, ClassValue> | undefined
 
-type SlotsName<S extends CPSlots, B extends ClassValue> = B extends undefined
+type SlotsName<S extends CVSlots, B extends ClassValue> = B extends undefined
   ? keyof S
   : keyof S | 'base'
 
-type SlotsClassValue<S extends CPSlots, B extends ClassValue> = {
+type SlotsClassValue<S extends CVSlots, B extends ClassValue> = {
   [K in SlotsName<S, B>]?: ClassValue;
 }
 
-export type CPVariantsDefault<
-  S extends CPSlots,
+export type CVVariantsDefault<
+  S extends CVSlots,
   B extends ClassValue,
 > = S extends undefined
   ? {}
   : {
       [key: string]: {
-        [key: string]: S extends CPSlots
+        [key: string]: S extends CVSlots
           ? SlotsClassValue<S, B> | ClassValue
           : ClassValue
       }
     }
 
-export type CPVariants<
-  S extends CPSlots,
+export type CVVariants<
+  S extends CVSlots,
   B extends ClassValue | undefined = undefined,
-> = CPVariantsDefault<S, B>
+> = CVVariantsDefault<S, B>
 
-export type CPCompoundVariants<
-  V extends CPVariants<S>,
-  S extends CPSlots,
+export type CVCompoundVariants<
+  V extends CVVariants<S>,
+  S extends CVSlots,
   B extends ClassValue,
 > = Array<
   {
@@ -71,58 +70,58 @@ export type CPCompoundVariants<
   )
 >
 
-export type CPDefaultVariants<
-  V extends CPVariants<S>,
-  S extends CPSlots,
+export type CVDefaultVariants<
+  V extends CVVariants<S>,
+  S extends CVSlots,
 > = {
   [K in keyof V]?: K extends keyof V
     ? StringToBoolean<keyof V[K]>
     : never
 }
 
-export type CPProps<
-  V extends CPVariants<S>,
-  S extends CPSlots,
+export type CVProps<
+  V extends CVVariants<S>,
+  S extends CVSlots,
 > = V extends undefined
   ? ClassProp
   : { [K in keyof V]?: StringToBoolean<keyof V[K]> | undefined } & ClassProp
 
-export interface CPReturnProps<
-  V extends CPVariants<S>,
-  S extends CPSlots,
+export interface CVReturnProps<
+  V extends CVVariants<S>,
+  S extends CVSlots,
   B extends ClassValue,
 > {
   theme: Simplify<{
     base: B
     slots: B extends undefined ? S : S & { base: string }
     variants: V
-    defaultVariants: CPDefaultVariants<V, S>
-    compoundVariants: CPCompoundVariants<V, S, B>
+    defaultVariants: CVDefaultVariants<V, S>
+    compoundVariants: CVCompoundVariants<V, S, B>
   }>
 }
 
-export type CPHandler<
-  V extends CPVariants<S>,
-  S extends CPSlots,
+export type CVHandler<
+  V extends CVVariants<S>,
+  S extends CVSlots,
   T = string,
-> = (props?: CPProps<V, S>) => T
+> = (props?: CVProps<V, S>) => T
 
-export type CPReturnType<
-  V extends CPVariants<S>,
-  S extends CPSlots,
+export type CVReturnType<
+  V extends CVVariants<S>,
+  S extends CVSlots,
   B extends ClassValue,
 > = {
-  (props?: CPProps<V, S>): S extends undefined
+  (props?: CVProps<V, S>): S extends undefined
     ? string
-    : { [K in keyof S | SlotsName<{}, B>]: CPHandler<V, S> }
-} & CPReturnProps<V, S, B>
+    : { [K in keyof S | SlotsName<{}, B>]: CVHandler<V, S> }
+} & CVReturnProps<V, S, B>
 
-export interface CPMeta<
-  V extends CPVariants<S, B>,
-  CV extends CPCompoundVariants<V, S, B>,
-  DV extends CPDefaultVariants<V, S>,
+export interface CVMeta<
+  V extends CVVariants<S, B>,
+  CV extends CVCompoundVariants<V, S, B>,
+  DV extends CVDefaultVariants<V, S>,
   B extends ClassValue = undefined,
-  S extends CPSlots = undefined,
+  S extends CVSlots = undefined,
 > {
   /** Base allows you to set a base class for a component. */
   base?: B
@@ -136,7 +135,7 @@ export interface CPMeta<
   defaultVariants?: DV
 }
 
-export interface CPOptions {
+export interface CVOptions {
   /**
    * A function to merge multiple class values into a single `className` string.
    *
@@ -146,11 +145,11 @@ export interface CPOptions {
   mergeClasses?: (...classes: ClassValue[]) => string
 }
 
-export type CPHandlerContext<
-  V extends CPVariants<S, B> = any,
-  S extends CPSlots = CPSlots,
+export type CVHandlerContext<
+  V extends CVVariants<S, B> = any,
+  S extends CVSlots = CVSlots,
   B extends ClassValue = ClassValue,
-> = Omit<CPReturnProps<V, S, B>['theme'], 'base'> & {
-  slotProps?: (CPProps<V, S> & Record<string, unknown>) | null
-  props?: (CPProps<V, S> & Record<string, unknown>) | null
+> = Omit<CVReturnProps<V, S, B>['theme'], 'base'> & {
+  slotProps?: (CVProps<V, S> & Record<string, unknown>) | null
+  props?: (CVProps<V, S> & Record<string, unknown>) | null
 }

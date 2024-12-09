@@ -1,9 +1,9 @@
-import { cp } from '@byyuurin/ui-kit'
 import { describe, expect, it } from 'vitest'
+import { cv } from './cv'
 
-describe('ui-kit', () => {
+describe('cv', () => {
   it('variants (normal)', () => {
-    const ui = cp({
+    const ui = cv({
       base: 'btn',
       variants: {
         type: {
@@ -31,7 +31,7 @@ describe('ui-kit', () => {
   })
 
   it('variants (slots)', () => {
-    const ui = cp({
+    const ui = cv({
       slots: {
         root: 'btn',
         icon: 'btn__icon',
@@ -65,7 +65,7 @@ describe('ui-kit', () => {
   })
 
   it('variants (normal-compound)', () => {
-    const ui = cp({
+    const ui = cv({
       base: 'btn',
       variants: {
         type: {
@@ -90,7 +90,7 @@ describe('ui-kit', () => {
   })
 
   it('variants (slots-compound)', () => {
-    const ui = cp({
+    const ui = cv({
       slots: {
         root: 'btn',
         icon: 'btn__icon',
