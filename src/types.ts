@@ -20,11 +20,14 @@ export type Simplify<T> = T extends Record<string, unknown>
     ? Array<Simplify<V>>
     : T
 
-/* types
+/* base types
 ---------------------------------------- */
 export type ClassProp<V = ClassValue> =
   | { class?: V, className?: never }
   | { class?: never, className?: V }
+
+/* CV types
+---------------------------------------- */
 
 export type CVSlots = Record<string, ClassValue> | undefined
 
@@ -92,7 +95,7 @@ export interface CVReturnProps<
   B extends ClassValue,
 > {
   theme: Simplify<{
-    base: B
+    base: B extends string ? string : B
     slots: B extends undefined ? S : S & { base: string }
     variants: V
     defaultVariants: CVDefaultVariants<V, S>
@@ -143,3 +146,32 @@ export type CVHandlerContext<
   slotProps?: (CVProps<V, S> & Record<string, unknown>) | null
   props?: (CVProps<V, S> & Record<string, unknown>) | null
 }
+
+/* CT types
+---------------------------------------- */
+export type CTMeta<
+  V extends CVVariants<S, B>,
+  CV extends CVCompoundVariants<V, S, B>,
+  DV extends CVDefaultVariants<V, S>,
+  B extends ClassValue = undefined,
+  S extends CVSlots = undefined,
+> = Omit<CVMeta<V, CV, DV, B, S>, 'defaultVariants'>
+
+export type CTReturn<
+  V extends CVVariants<S, B>,
+  CV extends CVCompoundVariants<V, S, B>,
+  B extends ClassValue = undefined,
+  S extends CVSlots = undefined,
+> = B extends string
+  ? {
+      base: string
+      slots: S
+      variants: V
+      compoundVariants: CV
+    }
+  : {
+      base: undefined
+      slots: S
+      variants: V
+      compoundVariants: CV
+    }
