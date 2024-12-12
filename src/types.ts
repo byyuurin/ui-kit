@@ -135,16 +135,6 @@ export interface CVMeta<
   defaultVariants?: DV
 }
 
-export interface CVOptions {
-  /**
-   * A function to merge multiple class values into a single `className` string.
-   *
-   * By default, it uses
-   * [`clsx`](https://github.com/lukeed/clsx) for merging.
-   */
-  mergeClasses?: (...classes: ClassValue[]) => string
-}
-
 export type CVHandlerContext<
   V extends CVVariants<S, B> = any,
   S extends CVSlots = CVSlots,

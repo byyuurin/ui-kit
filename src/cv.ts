@@ -1,4 +1,3 @@
-import { clsx } from 'clsx'
 import type {
   ClassValue,
   CVCompoundVariants,
@@ -6,13 +5,11 @@ import type {
   CVHandler,
   CVHandlerContext,
   CVMeta,
-  CVOptions,
-  CVProps,
   CVReturnType,
   CVSlots,
   CVVariants,
 } from './types'
-import { falsyToString, isEmptyObject } from './utils'
+import { clsx, falsyToString, isEmptyObject } from './utils'
 
 export function cv<
   V extends CVVariants<S, B>,
@@ -22,7 +19,6 @@ export function cv<
   S extends CVSlots = undefined,
 >(
   meta: CVMeta<V, CV, DV, B, S> = {},
-  options: CVOptions = {},
 ): CVReturnType<V, S, B> {
   const {
     base,
@@ -31,10 +27,6 @@ export function cv<
     compoundVariants = [] as unknown as CV,
     defaultVariants = {},
   } = meta
-
-  const {
-    mergeClasses = clsx,
-  } = options
 
   const slots: NonNullable<CVSlots> = isEmptyObject(slotsRaw)
     ? {}
@@ -50,7 +42,6 @@ export function cv<
 
   const handler = createHandler({
     ...context,
-    mergeClasses,
     base,
     slotsRaw,
   })
@@ -70,13 +61,11 @@ export function cv<
 
 function createHandler(
   context: CVHandlerContext & {
-    mergeClasses: (...classes: ClassValue[]) => string
     base: ClassValue
     slotsRaw: CVSlots
   },
 ) {
   const {
-    mergeClasses,
     base,
     variants,
     compoundVariants,
@@ -86,7 +75,7 @@ function createHandler(
 
   const handler: CVHandler<Record<string, any>, any, unknown> = (props) => {
     if (isEmptyObject(variants) && isEmptyObject(slots))
-      return mergeClasses(base, props?.class, props?.className)
+      return clsx(base, props?.class, props?.className)
 
     if (compoundVariants && !Array.isArray(compoundVariants))
       throw new Error(`The "compoundVariants" prop must be an array. Received: ${typeof compoundVariants}`)
@@ -105,7 +94,7 @@ function createHandler(
       if (typeof slots === 'object' && !isEmptyObject(slots)) {
         for (const slotName of Object.keys(slots)) {
           slotsHandlers[slotName] = (slotProps) => {
-            return mergeClasses(
+            return clsx(
               slots[slotName],
               getVariantClassValue({
                 ...context,
@@ -132,7 +121,7 @@ function createHandler(
     }
 
     // normal variants
-    return mergeClasses(
+    return clsx(
       base,
       getVariantClassValue({
         ...context,
@@ -215,13 +204,9 @@ function getVariantClassValue(
 }
 
 function getCompoundVariantClassValue(
-  context: CVHandlerContext & {
-    mergeClasses: (...classes: ClassValue[]) => string
-    slotName?: string
-  },
+  context: CVHandlerContext & { slotName?: string },
 ) {
   const {
-    mergeClasses,
     compoundVariants,
     defaultVariants,
     slotProps = null,
@@ -288,11 +273,11 @@ function getCompoundVariantClassValue(
 
   for (const className of compoundClassNames) {
     if (typeof className === 'string')
-      result.base = mergeClasses(result.base, className)
+      result.base = clsx(result.base, className)
 
     if (typeof className === 'object') {
       for (const [slot, slotClassName] of Object.entries(className as Record<string, ClassValue>))
-        result[slot] = mergeClasses(result[slot], slotClassName)
+        result[slot] = clsx(result[slot], slotClassName)
     }
   }
 
