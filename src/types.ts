@@ -175,3 +175,21 @@ export type CTReturn<
       variants: V
       compoundVariants: CV
     }
+
+/* CR types
+---------------------------------------- */
+export interface CRRuleContext {
+  /** Current selector for rule matching */
+  input: string
+  /** Unprocessed selector from user input. */
+  rawInput: string
+  /** Matched variants for this rule. */
+  rawVariant?: string
+}
+
+export type CRRuleMatcher = (
+  matchArray: string[],
+  context: Readonly<CRRuleContext>
+) => string
+
+export type CRRule = [RegExp, CRRuleMatcher]
