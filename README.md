@@ -1,14 +1,22 @@
 # @byyuurin/ui-kit
 
+A utility toolkit for designing themed UI components.
+
 [![npm version][npm-version-src]][npm-version-href]
 [![npm downloads][npm-downloads-src]][npm-downloads-href]
 [![bundle][bundle-src]][bundle-href]
 [![JSDocs][jsdocs-src]][jsdocs-href]
 [![License][license-src]][license-href]
 
-## [ct](./src/ct.ts) - helper for creating component themes
+## Installation
 
-normal component
+```bash
+npm i @byyuurin/ui-kit
+```
+
+## `ct` - A Tool for Defining Standalone UI Themes
+
+### Simple Component Example
 
 ```js
 import { ct } from '@byyuurin/ui-kit'
@@ -21,11 +29,10 @@ const theme = ct({
       outline: 'color-blue border border-blue',
     },
   },
-  // ...
 })
 ```
 
-component with slots
+### Component with Slots
 
 ```js
 import { ct } from '@byyuurin/ui-kit'
@@ -41,18 +48,112 @@ const theme = ct({
       outline: { base: 'color-blue border border-blue' },
     },
   },
-  // ...
 })
 ```
 
-## [cv](./src/cv.ts) - utility for creating ui variants
+### Conditional Variants Example
 
-normal component
+```js
+import { ct } from '@byyuurin/ui-kit'
+
+const theme = ct({
+  base: 'btn',
+  variants: {
+    type: {
+      default: '',
+      ghost: '',
+    },
+    color: {
+      red: '',
+      blue: '',
+    },
+  },
+  compoundVariants: [
+    { type: 'default', color: 'red', class: 'bg-red color-white' },
+    { type: 'default', color: 'blue', class: 'bg-blue color-white' },
+    { type: 'ghost', color: 'red', class: 'border border-red color-red' },
+    { type: 'ghost', color: 'blue', class: 'border border-blue color-blue' },
+  ],
+})
+```
+
+### Using Slots with Conditional Variants
+
+```js
+import { ct } from '@byyuurin/ui-kit'
+
+const theme = ct({
+  base: 'btn-base',
+  slots: {
+    root: 'btn',
+    icon: 'btn__icon',
+  },
+  variants: {
+    type: {
+      default: '',
+      ghost: '',
+    },
+    color: {
+      red: '',
+      blue: '',
+    },
+  },
+  compoundVariants: [
+    { type: 'default', color: 'red', class: { root: 'bg-red color-white' } },
+    { type: 'default', color: 'blue', class: { root: 'bg-blue color-white' } },
+    { type: 'ghost', color: 'red', class: { root: 'border border-red color-red' } },
+    { type: 'ghost', color: 'blue', class: { root: 'border border-blue color-blue' } },
+  ],
+})
+```
+
+## `cr` - A Utility for Merging Atomic Styles
+
+Define rules for processing and merging styles. Each rule returns a group name, ensuring only the last style in the same group is retained.
+
+```js
+import { cr } from '@byyuurin/ui-kit'
+
+const merge = cr([
+  [/^bg-(.+)$/, ([type], context) => {
+    const { rawVariant = '' } = context
+    const r = (groupKey) => `${rawVariant}bg-${groupKey}`
+
+    if (/^\[url\(.+\)\]$/.test(type))
+      return r('image')
+
+    if (/^\[image:.+\]$/.test(type))
+      return r('image')
+
+    if (/^\[(?:linear|conic|radial)-gradient\(.+\)\]$/.test(type))
+      return r('image')
+
+    if (/^\[(?:length|size):.+\]$/.test(type))
+      return r('size')
+
+    if (/^\[position:.+\]$/.test(type))
+      return r('position')
+
+    if (/^op(?:acity)?-?(.+)$/.test(type))
+      return r('opacity')
+
+    return r('color')
+  }],
+])
+
+merge('p-10 sm:p-2 p-5 sm:p-1') // Outputs: "p-5 sm:p-1"
+```
+
+## `cv` - A Utility for Creating Component Variants
+
+### Simple Component Example
 
 ```js
 import { cv } from '@byyuurin/ui-kit'
 
-const ui = cv({
+const createVariants = cv()
+
+const ui = createVariants({
   base: 'p-2',
   variants: {
     type: {
@@ -60,20 +161,51 @@ const ui = cv({
       outline: 'color-blue border border-blue',
     },
   },
-  // ...
 })
 
-ui() // "p-2"
-
-ui({ type: 'solid' }) // "p-2 bg-blue color-white"
+ui() // Outputs: "p-2"
+ui({ type: 'solid' }) // Outputs: "p-2 bg-blue color-white"
 ```
 
-component with slots
+### Conditional Variants Example
 
 ```js
 import { cv } from '@byyuurin/ui-kit'
 
-const ui = cv({
+const createVariants = cv()
+
+const ui = createVariants({
+  base: 'btn',
+  variants: {
+    type: {
+      default: '',
+      ghost: '',
+    },
+    color: {
+      red: '',
+      blue: '',
+    },
+  },
+  compoundVariants: [
+    { type: 'default', color: 'red', class: 'bg-red color-white' },
+    { type: 'default', color: 'blue', class: 'bg-blue color-white' },
+    { type: 'ghost', color: 'red', class: 'border border-red color-red' },
+    { type: 'ghost', color: 'blue', class: 'border border-blue color-blue' },
+  ],
+})
+
+ui({ type: 'default', color: 'red' }) // Outputs: "btn bg-red color-white"
+ui({ type: 'ghost', color: 'red' }) // Outputs: "btn border border-red color-red"
+```
+
+### Component with Slots
+
+```js
+import { cv } from '@byyuurin/ui-kit'
+
+const createVariants = cv()
+
+const ui = createVariants({
   slots: {
     base: 'p-2 flex items-center',
     icon: 'color-white',
@@ -84,22 +216,59 @@ const ui = cv({
       outline: { base: 'color-blue border border-blue' },
     },
   },
-  // ...
 })
 
-ui().base() // "p-2 flex items-center"
-ui().icon() // "color-white"
-
-ui({ type: 'solid' }).base() // "p-2 flex items-center bg-blue color-white"
-ui().base({ type: 'outline' }) // "p-2 flex items-center color-blue border border-blue"
+ui().base() // Outputs: "p-2 flex items-center"
+ui().icon() // Outputs: "color-white"
+ui({ type: 'solid' }).base() // Outputs: "p-2 flex items-center bg-blue color-white"
+ui().base({ type: 'outline' }) // Outputs: "p-2 flex items-center color-blue border border-blue"
 ```
 
-You can use it with `ct`
+### Component with Slots and Conditional Variants
+
+```js
+import { cv } from '@byyuurin/ui-kit'
+
+const createVariants = cv()
+
+const ui = createVariants({
+  base: 'btn-base',
+  slots: {
+    root: 'btn',
+    icon: 'btn__icon',
+  },
+  variants: {
+    type: {
+      default: '',
+      ghost: '',
+    },
+    color: {
+      red: '',
+      blue: '',
+    },
+  },
+  compoundVariants: [
+    { type: 'default', color: 'red', class: { root: 'bg-red color-white' } },
+    { type: 'default', color: 'blue', class: { root: 'bg-blue color-white' } },
+    { type: 'ghost', color: 'red', class: { root: 'border border-red color-red' } },
+    { type: 'ghost', color: 'blue', class: { root: 'border border-blue color-blue' } },
+  ],
+})
+
+ui({ type: 'default', color: 'red' }).root() // Outputs: "btn bg-red color-white"
+ui().root({ type: 'default', color: 'red' }) // Outputs: "btn bg-red color-white"
+ui({ type: 'ghost', color: 'red' }).root() // Outputs: "btn border border-red color-red"
+ui().root({ type: 'ghost', color: 'red' }) // Outputs: "btn border border-red color-red"
+```
+
+### Combining `ct` and `cv`
+
+You can first define a theme using `ct` and then pass it to `cv` to create a variant function.
 
 ```js
 import { ct, cv } from '@byyuurin/ui-kit'
 
-const buttonTheme = ct({
+const theme = ct({
   base: 'p-2',
   variants: {
     type: {
@@ -109,10 +278,25 @@ const buttonTheme = ct({
   },
 })
 
-const uiButton = cv(buttonTheme)
+const createVariants = cv()
+
+const ui = createVariants(theme)
 ```
 
-## [cr](./src/cr.ts) - utility for replace/merge classNames
+### Setting Atomic Style Merge Rules
+
+You can also define atomic style merge rules when creating the variant function:
+
+```js
+import { cv } from '@byyuurin/ui-kit'
+
+const createVariants = cv([
+  [/^p-(.+)$/, (_, context) => {
+    const { rawVariant = '' } = context
+    return `${rawVariant}p`
+  }],
+])
+```
 
 ## License
 
