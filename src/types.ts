@@ -26,6 +26,10 @@ export type ClassProp<V = ClassValue> =
   | { class?: V, className?: never }
   | { class?: never, className?: V }
 
+export type VariantProps<T> = T extends CVReturnType<infer V, infer S, ClassValue>
+  ? CVDefaultVariants<V, S>
+  : never
+
 /* CV types
 ---------------------------------------- */
 
@@ -89,35 +93,21 @@ export type CVProps<
   ? ClassProp
   : { [K in keyof V]?: StringToBoolean<keyof V[K]> | undefined } & ClassProp
 
-export interface CVReturnProps<
-  V extends CVVariants<S>,
-  S extends CVSlots,
-  B extends ClassValue,
-> {
-  theme: Simplify<{
-    base: B extends string ? string : B
-    slots: B extends undefined ? S : S & { base: string }
-    variants: V
-    defaultVariants: CVDefaultVariants<V, S>
-    compoundVariants: CVCompoundVariants<V, S, B>
-  }>
-}
-
 export type CVHandler<
   V extends CVVariants<S>,
   S extends CVSlots,
   T = string,
 > = (props?: CVProps<V, S>) => T
 
-export type CVReturnType<
+export interface CVReturnType<
   V extends CVVariants<S>,
   S extends CVSlots,
   B extends ClassValue,
-> = {
+> {
   (props?: CVProps<V, S>): S extends undefined
     ? string
     : { [K in keyof S | SlotsName<{}, B>]: CVHandler<V, S> }
-} & CVReturnProps<V, S, B>
+}
 
 export interface CVMeta<
   V extends CVVariants<S, B>,
@@ -138,13 +128,18 @@ export interface CVMeta<
   defaultVariants?: DV
 }
 
-export type CVHandlerContext<
+export interface CVHandlerContext<
   V extends CVVariants<S, B> = any,
   S extends CVSlots = CVSlots,
   B extends ClassValue = ClassValue,
-> = Omit<CVReturnProps<V, S, B>['theme'], 'base'> & {
+> {
+  slots: B extends undefined ? S : S & { base: string }
+  variants: V
+  defaultVariants: CVDefaultVariants<V, S>
+  compoundVariants: CVCompoundVariants<V, S, B>
   slotProps?: (CVProps<V, S> & Record<string, unknown>) | null
   props?: (CVProps<V, S> & Record<string, unknown>) | null
+  merge: (...classes: ClassValue[]) => string
 }
 
 /* CT types

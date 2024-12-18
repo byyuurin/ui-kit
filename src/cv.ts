@@ -1,5 +1,7 @@
+import { cr } from './cr'
 import type {
   ClassValue,
+  CRRule,
   CVCompoundVariants,
   CVDefaultVariants,
   CVHandler,
@@ -11,52 +13,51 @@ import type {
 } from './types'
 import { clsx, falsyToString, isEmptyObject } from './utils'
 
-export function cv<
-  V extends CVVariants<S, B>,
-  CV extends CVCompoundVariants<V, S, B>,
-  DV extends CVDefaultVariants<V, S>,
-  B extends ClassValue = undefined,
-  S extends CVSlots = undefined,
->(
-  meta: CVMeta<V, CV, DV, B, S> = {},
-): CVReturnType<V, S, B> {
-  const {
-    base,
-    slots: slotsRaw = {},
-    variants = {},
-    compoundVariants = [] as unknown as CV,
-    defaultVariants = {},
-  } = meta
+export function cv(rules: CRRule[] = []) {
+  const crMerge = rules.length > 0 ? cr(rules) : null
 
-  const slots: NonNullable<CVSlots> = isEmptyObject(slotsRaw)
-    ? {}
-    : { base, ...slotsRaw }
-
-  const context: CVHandlerContext = {
-    slots,
-    variants,
-    // @ts-expect-error missing types
-    compoundVariants,
-    defaultVariants,
+  const merge = (...classes: ClassValue[]) => {
+    const merged = clsx(...classes)
+    return crMerge ? crMerge(merged) : merged
   }
 
-  const handler = createHandler({
-    ...context,
-    base,
-    slotsRaw,
-  })
+  return <
+    V extends CVVariants<S, B>,
+    CV extends CVCompoundVariants<V, S, B>,
+    DV extends CVDefaultVariants<V, S>,
+    B extends ClassValue = undefined,
+    S extends CVSlots = undefined,
+  >(
+    meta: CVMeta<V, CV, DV, B, S> = {},
+  ): CVReturnType<V, S, B> => {
+    const {
+      base,
+      slots: slotsRaw = {},
+      variants = {},
+      compoundVariants = [] as unknown as CV,
+      defaultVariants = {},
+    } = meta
 
-  const component = handler as unknown as CVReturnType<V, S, B>
+    const slots: NonNullable<CVSlots> = isEmptyObject(slotsRaw)
+      ? {}
+      : { base, ...slotsRaw }
 
-  component.theme = {
-    base,
-    slots,
-    variants,
-    compoundVariants,
-    defaultVariants,
-  } as any
+    const context: CVHandlerContext = {
+      slots,
+      variants,
+      compoundVariants: compoundVariants as any,
+      defaultVariants,
+      merge,
+    }
 
-  return component
+    const handler = createHandler({
+      ...context,
+      base,
+      slotsRaw,
+    })
+
+    return handler as unknown as CVReturnType<V, S, B>
+  }
 }
 
 function createHandler(
@@ -71,6 +72,7 @@ function createHandler(
     compoundVariants,
     slots,
     slotsRaw,
+    merge,
   } = context
 
   const handler: CVHandler<Record<string, any>, any, unknown> = (props) => {
@@ -94,7 +96,7 @@ function createHandler(
       if (typeof slots === 'object' && !isEmptyObject(slots)) {
         for (const slotName of Object.keys(slots)) {
           slotsHandlers[slotName] = (slotProps) => {
-            return clsx(
+            return merge(
               slots[slotName],
               getVariantClassValue({
                 ...context,
@@ -108,8 +110,7 @@ function createHandler(
                 slotName,
                 slotProps,
               }),
-              props?.class,
-              props?.className,
+              ...slotName === 'base' ? [props?.class, props?.className] : [],
               slotProps?.class,
               slotProps?.className,
             )
@@ -121,7 +122,7 @@ function createHandler(
     }
 
     // normal variants
-    return clsx(
+    return merge(
       base,
       getVariantClassValue({
         ...context,

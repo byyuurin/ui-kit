@@ -3,10 +3,10 @@ import { ct } from './ct'
 
 describe('ct', () => {
   it('should return same with input', () => {
-    const input = ct({
-      base: 'btn-base',
+    const theme = ct({
+      base: 'btn',
       slots: {
-        root: 'btn',
+        root: 'btn__root',
         icon: 'btn__icon',
       },
       variants: {
@@ -27,9 +27,9 @@ describe('ct', () => {
       ],
     })
 
-    expect(input).toMatchInlineSnapshot(`
+    expect(theme).toMatchInlineSnapshot(`
       {
-        "base": "btn-base",
+        "base": "btn",
         "compoundVariants": [
           {
             "class": {
@@ -62,7 +62,7 @@ describe('ct', () => {
         ],
         "slots": {
           "icon": "btn__icon",
-          "root": "btn",
+          "root": "btn__root",
         },
         "variants": {
           "color": {
@@ -79,7 +79,7 @@ describe('ct', () => {
   })
 
   it('should ignore defaultVariants in the input', () => {
-    const input = ct({
+    const theme = ct({
       base: 'btn-base',
       slots: {
         root: 'btn',
@@ -108,7 +108,7 @@ describe('ct', () => {
       },
     })
 
-    expect(input).toMatchInlineSnapshot(`
+    expect(theme).toMatchInlineSnapshot(`
       {
         "base": "btn-base",
         "compoundVariants": [
@@ -155,7 +155,7 @@ describe('ct', () => {
             "ghost": "",
           },
         },
-      }
+      } 
     `)
   })
 })

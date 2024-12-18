@@ -2,8 +2,10 @@ import { describe, expect, it } from 'vitest'
 import { cv } from './cv'
 
 describe('cv', () => {
+  const createVariants = cv()
+
   it('variants (normal)', () => {
-    const ui = cv({
+    const ui = createVariants({
       base: 'btn',
       variants: {
         type: {
@@ -31,7 +33,7 @@ describe('cv', () => {
   })
 
   it('variants (slots)', () => {
-    const ui = cv({
+    const ui = createVariants({
       slots: {
         root: 'btn',
         icon: 'btn__icon',
@@ -54,7 +56,7 @@ describe('cv', () => {
       },
     })
 
-    expect(ui({ class: 'btn-custom' }).root()).toMatchInlineSnapshot(`"btn btn-default btn-custom"`)
+    expect(ui({ class: 'btn-custom' }).root()).toMatchInlineSnapshot(`"btn btn-default"`)
     expect(ui().root({ class: 'btn-custom' })).toMatchInlineSnapshot(`"btn btn-default btn-custom"`)
 
     expect(ui({ disabled: true }).root()).toMatchInlineSnapshot(`"btn btn-default btn--disabled"`)
@@ -65,7 +67,7 @@ describe('cv', () => {
   })
 
   it('variants (normal-compound)', () => {
-    const ui = cv({
+    const ui = createVariants({
       base: 'btn',
       variants: {
         type: {
@@ -90,9 +92,10 @@ describe('cv', () => {
   })
 
   it('variants (slots-compound)', () => {
-    const ui = cv({
+    const ui = createVariants({
+      base: 'btn',
       slots: {
-        root: 'btn',
+        root: 'btn__root',
         icon: 'btn__icon',
       },
       variants: {
@@ -113,10 +116,10 @@ describe('cv', () => {
       ],
     })
 
-    expect(ui({ type: 'default', color: 'red' }).root()).toMatchInlineSnapshot(`"btn bg-red color-white"`)
-    expect(ui().root({ type: 'default', color: 'red' })).toMatchInlineSnapshot(`"btn bg-red color-white"`)
+    expect(ui({ type: 'default', color: 'red' }).root()).toMatchInlineSnapshot(`"btn__root bg-red color-white"`)
+    expect(ui().root({ type: 'default', color: 'red' })).toMatchInlineSnapshot(`"btn__root bg-red color-white"`)
 
-    expect(ui({ type: 'ghost', color: 'red' }).root()).toMatchInlineSnapshot(`"btn border border-red color-red"`)
-    expect(ui().root({ type: 'ghost', color: 'red' })).toMatchInlineSnapshot(`"btn border border-red color-red"`)
+    expect(ui({ type: 'ghost', color: 'red' }).root()).toMatchInlineSnapshot(`"btn__root border border-red color-red"`)
+    expect(ui().root({ type: 'ghost', color: 'red' })).toMatchInlineSnapshot(`"btn__root border border-red color-red"`)
   })
 })
