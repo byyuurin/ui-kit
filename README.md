@@ -115,29 +115,26 @@ Define rules for processing and merging styles. Each rule returns a group name, 
 import { cr } from '@byyuurin/ui-kit'
 
 const merge = cr([
-  [/^bg-(.+)$/, ([type], context) => {
-    const { rawVariant = '' } = context
-    const r = (groupKey) => `${rawVariant}bg-${groupKey}`
-
+  [/^bg-(.+)$/, ([type]) => {
     if (/^\[url\(.+\)\]$/.test(type))
-      return r('image')
+      return 'image'
 
     if (/^\[image:.+\]$/.test(type))
-      return r('image')
+      return 'image'
 
     if (/^\[(?:linear|conic|radial)-gradient\(.+\)\]$/.test(type))
-      return r('image')
+      return 'image'
 
     if (/^\[(?:length|size):.+\]$/.test(type))
-      return r('size')
+      return 'size'
 
     if (/^\[position:.+\]$/.test(type))
-      return r('position')
+      return 'position'
 
     if (/^op(?:acity)?-?(.+)$/.test(type))
-      return r('opacity')
+      return 'opacity'
 
-    return r('color')
+    return 'color'
   }],
 ])
 
@@ -291,9 +288,26 @@ You can also define atomic style merge rules when creating the variant function:
 import { cv } from '@byyuurin/ui-kit'
 
 const createVariants = cv([
-  [/^p-(.+)$/, (_, context) => {
-    const { rawVariant = '' } = context
-    return `${rawVariant}p`
+  [/^bg-(.+)$/, ([type]) => {
+    if (/^\[url\(.+\)\]$/.test(type))
+      return 'image'
+
+    if (/^\[image:.+\]$/.test(type))
+      return 'image'
+
+    if (/^\[(?:linear|conic|radial)-gradient\(.+\)\]$/.test(type))
+      return 'image'
+
+    if (/^\[(?:length|size):.+\]$/.test(type))
+      return 'size'
+
+    if (/^\[position:.+\]$/.test(type))
+      return 'position'
+
+    if (/^op(?:acity)?-?(.+)$/.test(type))
+      return 'opacity'
+
+    return 'color'
   }],
 ])
 ```

@@ -57,29 +57,26 @@ describe('cr', () => {
 
   describe('merger', () => {
     const rules: CRRule[] = [
-      [/^bg-(.+)$/, ([type], context) => {
-        const { rawVariant = '' } = context
-        const r = (groupKey: string) => `${rawVariant}bg-${groupKey}`
-
+      [/^bg-(.+)$/, ([type]) => {
         if (/^\[url\(.+\)\]$/.test(type))
-          return r('image')
+          return 'image'
 
         if (/^\[image:.+\]$/.test(type))
-          return r('image')
+          return 'image'
 
         if (/^\[(?:linear|conic|radial)-gradient\(.+\)\]$/.test(type))
-          return r('image')
+          return 'image'
 
         if (/^\[(?:length|size):.+\]$/.test(type))
-          return r('size')
+          return 'size'
 
         if (/^\[position:.+\]$/.test(type))
-          return r('position')
+          return 'position'
 
         if (/^op(?:acity)?-?(.+)$/.test(type))
-          return r('opacity')
+          return 'opacity'
 
-        return r('color')
+        return 'color'
       }],
     ]
 

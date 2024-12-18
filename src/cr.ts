@@ -3,11 +3,13 @@ import type { CRRule } from './types'
 export function cr(rules: CRRule[]) {
   const handlers = rules.map(([matcher, handler]) => {
     return (input: string) => {
-      const context = parseInput(matcher, input)
+      const data = parseInput(matcher, input)
 
-      if (context) {
-        const { matchArray, ...ctx } = context
-        return handler(matchArray, ctx)
+      if (data) {
+        const { matchArray, ...context } = data
+        const prefix = (context.rawVariant ?? '') + matcher.source.replace(/[^\w]/g, '')
+        const result = handler(matchArray, context)
+        return `${prefix}-${result}`
       }
 
       return null
