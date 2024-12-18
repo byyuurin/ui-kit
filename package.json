@@ -6,12 +6,12 @@
   "description": "",
   "author": "Yuurin <byyuurin@gmail.com>",
   "license": "MIT",
-  "homepage": "https://github.com/byyuurin/@byyuurin/ui-kit#readme",
+  "homepage": "https://github.com/byyuurin/ui-kit#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/byyuurin/@byyuurin/ui-kit.git"
+    "url": "git+https://github.com/byyuurin/ui-kit.git"
   },
-  "bugs": "https://github.com/byyuurin/@byyuurin/ui-kit/issues",
+  "bugs": "https://github.com/byyuurin/ui-kit/issues",
   "keywords": [],
   "sideEffects": false,
   "exports": {
