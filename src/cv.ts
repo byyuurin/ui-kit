@@ -1,3 +1,4 @@
+import { clsx } from 'clsx'
 import { cr } from './cr'
 import type {
   ClassValue,
@@ -11,13 +12,17 @@ import type {
   CVSlots,
   CVVariants,
 } from './types'
-import { clsx, falsyToString, isEmptyObject } from './utils'
+import { falsyToString, isEmptyObject } from './utils'
+
+function _clsx(...classes: ClassValue[]): string {
+  return clsx(...classes)
+}
 
 export function cv(rules: CRRule[] = []) {
   const crMerge = rules.length > 0 ? cr(rules) : null
 
-  const merge = (...classes: ClassValue[]) => {
-    const merged = clsx(...classes)
+  const merge = (...classes: ClassValue[]): string => {
+    const merged = _clsx(...classes)
     return crMerge ? crMerge(merged) : merged
   }
 
@@ -77,7 +82,7 @@ function createHandler(
 
   const handler: CVHandler<Record<string, any>, any, unknown> = (props) => {
     if (isEmptyObject(variants) && isEmptyObject(slots))
-      return clsx(base, props?.class, props?.className)
+      return _clsx(base, props?.class, props?.className)
 
     if (compoundVariants && !Array.isArray(compoundVariants))
       throw new Error(`The "compoundVariants" prop must be an array. Received: ${typeof compoundVariants}`)
@@ -274,11 +279,11 @@ function getCompoundVariantClassValue(
 
   for (const className of compoundClassNames) {
     if (typeof className === 'string')
-      result.base = clsx(result.base, className)
+      result.base = _clsx(result.base, className)
 
     if (typeof className === 'object') {
       for (const [slot, slotClassName] of Object.entries(className as Record<string, ClassValue>))
-        result[slot] = clsx(result[slot], slotClassName)
+        result[slot] = _clsx(result[slot], slotClassName)
     }
   }
 
