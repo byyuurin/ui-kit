@@ -1,8 +1,10 @@
 /* eslint-disable ts/no-empty-object-type */
 
-import type { ClassValue } from 'clsx'
-
-export { ClassValue }
+/* clsx types (source: https://github.com/lukeed/clsx/blob/master/clsx.d.ts)
+---------------------------------------- */
+type ClassDictionary = Record<string, any>
+type ClassArray = ClassValue[]
+export type ClassValue = ClassArray | ClassDictionary | string | number | bigint | null | boolean | undefined
 
 /* utils
 ---------------------------------------- */
