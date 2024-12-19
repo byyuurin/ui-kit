@@ -1,15 +1,21 @@
-import type { CRRule } from './types'
+import type { CRRule, CRRuleContext } from './types'
 
 export function cr(rules: CRRule[]) {
   const handlers = rules.map(([matcher, handler]) => {
+    const id = matcher.source.replace(/^\^|\$$/g, '')
+
     return (input: string) => {
+      const resolve = (context: CRRuleContext, value: string) => {
+        const groupKey = (context.rawVariant ?? '') + id
+        return `${groupKey}-${value}`
+      }
+
       const data = parseInput(matcher, input)
 
       if (data) {
         const { matchArray, ...context } = data
-        const prefix = (context.rawVariant ?? '') + matcher.source.replace(/[^\w]/g, '')
-        const result = handler(matchArray, context)
-        return `${prefix}-${result}`
+        const value = handler(matchArray, context)
+        return typeof value === 'string' ? resolve(context, value) : null
       }
 
       return null

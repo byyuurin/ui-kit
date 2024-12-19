@@ -187,6 +187,6 @@ export interface CRRuleContext {
 export type CRRuleMatcher = (
   matchArray: string[],
   context: Readonly<CRRuleContext>
-) => string
+) => string | null
 
 export type CRRule = [RegExp, CRRuleMatcher]
