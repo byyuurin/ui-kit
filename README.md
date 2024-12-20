@@ -138,7 +138,7 @@ const merge = cr([
   }],
 ])
 
-merge('p-10 sm:p-2 p-5 sm:p-1') // Outputs: "p-5 sm:p-1"
+merge('border bg-red-100 sm:bg-red/10 bg-blue-200 sm:bg-blue/50') // Outputs: "border bg-blue-200 sm:bg-blue/50"
 ```
 
 ## `cv` - A Utility for Creating Component Variants
