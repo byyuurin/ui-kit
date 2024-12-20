@@ -48,31 +48,25 @@ export function cr(rules: CRRule[]) {
 }
 
 export function transformMatcher(matcher: RegExp) {
-  const prefix = '^((?:.+)[-:])?'
-
-  if (matcher.source.startsWith(prefix))
-    return matcher
-
-  const source = matcher.source.replace(/^\^|\$$/g, '')
-  return new RegExp(`${prefix}${source}$`)
+  return new RegExp(`${matcher.source.replace(/^\^|\$$/g, '')}$`)
 }
 
 export function parseInput(matcher: RegExp, className: string) {
-  const _matcher = transformMatcher(matcher)
-  const [rawInput, rawVariant = '', ...matchArray] = className.match(_matcher) ?? []
+  const variantMatcher = transformMatcher(matcher)
 
-  if (!rawInput)
-    return null
+  if (variantMatcher.test(className)) {
+    const matched = className.match(variantMatcher)!
+    const [input, ...matchArray] = matched
+    const rawInput = matched.input!
+    const rawVariant = rawInput.slice(0, -1 * input.length)
 
-  let input = rawInput
-
-  if (rawVariant)
-    input = rawInput.slice(rawVariant.length)
-
-  return {
-    rawInput,
-    rawVariant,
-    input,
-    matchArray,
+    return {
+      rawInput,
+      rawVariant,
+      input,
+      matchArray,
+    }
   }
+
+  return null
 }

@@ -4,7 +4,7 @@ import type { CRRule } from './types'
 
 describe('cr', () => {
   const matcherWithoutTransform = /^bg-(.+)$/
-  const matcherTransformed = /^((?:.+)[-:])?bg-(.+)$/
+  const matcherTransformed = /bg-(.+)$/
 
   describe('matcher transform', () => {
     it('should return the transformed matcher', () => {
@@ -24,8 +24,8 @@ describe('cr', () => {
       expect(context).toMatchInlineSnapshot(`null`)
     })
 
-    it('should return context with undefined rawVariant', () => {
-      const context = parseInput(matcherTransformed, 'bg-red-100:50')
+    it('should return context with empty rawVariant', () => {
+      const context = parseInput(matcherWithoutTransform, 'bg-red-100:50')
 
       expect(context).toMatchInlineSnapshot(`
         {
@@ -40,7 +40,7 @@ describe('cr', () => {
     })
 
     it('should return context with rawVariant', () => {
-      const context = parseInput(matcherTransformed, 'children:bg-red-100:50')
+      const context = parseInput(matcherWithoutTransform, 'children:bg-red-100:50')
 
       expect(context).toMatchInlineSnapshot(`
         {
