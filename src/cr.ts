@@ -1,13 +1,14 @@
 import type { CRRule, CRRuleContext } from './types'
 
 export function cr(rules: CRRule[]) {
-  const handlers = rules.map(([matcher, handler]) => {
-    const id = matcher.source.replace(/^\^|\$$/g, '')
+  const handlers = rules.map(([matcher, handler, options = {}]) => {
+    const { scope = '' } = options
 
     return (input: string) => {
       const resolve = (context: CRRuleContext, value: string) => {
-        const groupKey = (context.rawVariant ?? '') + id
-        return `${groupKey}-${value}`
+        const variant = (context.rawVariant ?? '')
+        const groupName = scope ? `${scope}-${value}` : value
+        return `${variant}${groupName}`
       }
 
       const data = parseInput(matcher, input)

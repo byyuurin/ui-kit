@@ -184,9 +184,20 @@ export interface CRRuleContext {
   rawVariant?: string
 }
 
+export interface CRRuleOptions {
+  /**
+   * Prefix for internal group name
+   *
+   * @default ""
+   */
+  scope?: string
+}
+
 export type CRRuleMatcher = (
   matchArray: string[],
   context: Readonly<CRRuleContext>
 ) => string | null
 
-export type CRRule = [RegExp, CRRuleMatcher]
+export type CRRule =
+  | [RegExp, CRRuleMatcher]
+  | [RegExp, CRRuleMatcher, CRRuleOptions]

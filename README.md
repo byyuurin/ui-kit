@@ -115,27 +115,31 @@ Define rules for processing and merging styles. Each rule returns a group name, 
 import { cr } from '@byyuurin/ui-kit'
 
 const merge = cr([
-  [/^bg-(.+)$/, ([type]) => {
-    if (/^\[url\(.+\)\]$/.test(type))
-      return 'image'
+  [
+    /^bg-(.+)$/,
+    ([type]) => {
+      if (/^\[url\(.+\)\]$/.test(type))
+        return 'image'
 
-    if (/^\[image:.+\]$/.test(type))
-      return 'image'
+      if (/^\[image:.+\]$/.test(type))
+        return 'image'
 
-    if (/^\[(?:linear|conic|radial)-gradient\(.+\)\]$/.test(type))
-      return 'image'
+      if (/^\[(?:linear|conic|radial)-gradient\(.+\)\]$/.test(type))
+        return 'image'
 
-    if (/^\[(?:length|size):.+\]$/.test(type))
-      return 'size'
+      if (/^\[(?:length|size):.+\]$/.test(type))
+        return 'size'
 
-    if (/^\[position:.+\]$/.test(type))
-      return 'position'
+      if (/^\[position:.+\]$/.test(type))
+        return 'position'
 
-    if (/^op(?:acity)?-?(.+)$/.test(type))
-      return 'opacity'
+      if (/^op(?:acity)?-?(.+)$/.test(type))
+        return 'opacity'
 
-    return 'color'
-  }],
+      return 'color'
+    },
+    { scope: 'bg' },
+  ],
 ])
 
 merge('border bg-red-100 sm:bg-red/10 bg-blue-200 sm:bg-blue/50') // Outputs: "border bg-blue-200 sm:bg-blue/50"
