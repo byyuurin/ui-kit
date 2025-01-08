@@ -1,6 +1,13 @@
 import type { CRRule, CRRuleContext } from './types'
 
-export function cr(rules: CRRule[]) {
+interface CROptions {
+  debug?: boolean
+}
+
+export function cr(
+  rules: CRRule[],
+  options: CROptions = {},
+) {
   const handlers = rules.map(([matcher, handler, options = {}]) => {
     const { scope = '' } = options
 
@@ -26,6 +33,7 @@ export function cr(rules: CRRule[]) {
   return (className: string) => {
     const classNames = className.split(/\s+/)
     const temp = new Map<string, string>([])
+    let index = 0
 
     for (const className of classNames) {
       let groupKey = className
@@ -41,7 +49,10 @@ export function cr(rules: CRRule[]) {
         return false
       })
 
-      temp.set(groupKey, className)
+      if (options.debug)
+        temp.set(`[${index++}]${groupKey}`, groupKey)
+      else
+        temp.set(groupKey, className)
     }
 
     return Array.from(temp.values()).join(' ')
