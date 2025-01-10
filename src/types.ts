@@ -8,6 +8,8 @@ export type ClassValue = ClassArray | ClassDictionary | string | number | bigint
 
 /* utils
 ---------------------------------------- */
+type MaybeArray<T> = T | T[]
+
 export type ParseString<T, InferValue, TrueType, FalseType = string> = T extends InferValue
   ? TrueType
   : FalseType
@@ -53,7 +55,7 @@ export type CVVariantsDefault<
   : {
       [key: string]: {
         [key: string]: S extends CVSlots
-          ? SlotsClassValue<S, B> | ClassValue
+          ? SlotsClassValue<S, B> | null | ''
           : ClassValue
       }
     }
@@ -73,9 +75,9 @@ export type CVCompoundVariants<
       | (K extends keyof V ? StringToBoolean<keyof V[K]> : never)
       | (K extends keyof V ? StringToBoolean<keyof V[K]>[] : never)
   } & (
-    B extends undefined
-      ? ClassProp<SlotsClassValue<S, B>>
-      : ClassProp<SlotsClassValue<S, B> | ClassValue>
+    B extends MaybeArray<string>
+      ? ClassProp<SlotsClassValue<S, B> | ClassValue>
+      : ClassProp<SlotsClassValue<S, B>>
   )
 >
 
@@ -135,7 +137,9 @@ export interface CVHandlerContext<
   S extends CVSlots = CVSlots,
   B extends ClassValue = ClassValue,
 > {
-  slots: B extends undefined ? S : S & { base: string }
+  slots: B extends undefined
+    ? S
+    : S & { base: B extends any[] ? string[] : string }
   variants: V
   defaultVariants: CVDefaultVariants<V, S>
   compoundVariants: CVCompoundVariants<V, S, B>
@@ -159,9 +163,9 @@ export type CTReturn<
   CV extends CVCompoundVariants<V, S, B>,
   B extends ClassValue = undefined,
   S extends CVSlots = undefined,
-> = B extends string
+> = B extends MaybeArray<string>
   ? {
-      base: string
+      base: B extends any[] ? string[] : string
       slots: S
       variants: V
       compoundVariants: CV
