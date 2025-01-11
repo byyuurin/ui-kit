@@ -45,7 +45,7 @@ export function cv(rules: CRRule[] = []) {
 
     const slots: NonNullable<CVSlots> = isEmptyObject(slotsRaw)
       ? {}
-      : { base, ...slotsRaw }
+      : { ...slotsRaw, base: [base, slotsRaw.base] }
 
     const context: CVHandlerContext = {
       slots,
@@ -203,7 +203,7 @@ function getVariantClassValue(
         : variantValue && (variantValue as any)[slotName]
 
     if (value)
-      values[values.length] = value
+      values.push(value)
   }
 
   return values
