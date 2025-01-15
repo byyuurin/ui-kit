@@ -32,7 +32,9 @@ export type ClassProp<V = ClassValue> =
 
 export type VariantProps<T> = T extends CVReturnType<infer V, infer S, ClassValue>
   ? CVDefaultVariants<V, S>
-  : never
+  : T extends CTReturn<infer V, any, ClassValue, infer S>
+    ? CVDefaultVariants<V, S>
+    : never
 
 /* CV types
 ---------------------------------------- */
