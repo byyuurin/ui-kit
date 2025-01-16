@@ -95,9 +95,9 @@ export type CVDefaultVariants<
 export type CVProps<
   V extends CVVariants<S>,
   S extends CVSlots,
-> = V extends undefined
-  ? ClassProp
-  : { [K in keyof V]?: StringToBoolean<keyof V[K]> | undefined } & ClassProp
+> = [keyof V] extends string[]
+  ? { [K in keyof V]?: StringToBoolean<keyof V[K]> } & ClassProp
+  : ClassProp
 
 export type CVHandler<
   V extends CVVariants<S>,
