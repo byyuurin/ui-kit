@@ -1,19 +1,14 @@
 import { describe, expect, it } from 'vitest'
-import { cr, parseInput, transformMatcher } from './cr'
+import { cr, parseInput, transformInputRule } from './cr'
 import type { CRRule } from './types'
 
 describe('cr', () => {
   const matcherWithoutTransform = /^bg-(.+)$/
-  const matcherTransformed = /bg-(.+)$/
+  const matcherTransformed = /^(.+[:-])?bg-(.+)$/
 
   describe('matcher transform', () => {
-    it('should return the transformed matcher', () => {
-      const matcher = transformMatcher(matcherWithoutTransform)
-      expect(matcher).toEqual(matcherTransformed)
-    })
-
     it('should be same matcher', () => {
-      const matcher = transformMatcher(matcherTransformed)
+      const matcher = transformInputRule(matcherWithoutTransform)
       expect(matcher).toEqual(matcherTransformed)
     })
   })

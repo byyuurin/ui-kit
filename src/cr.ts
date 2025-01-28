@@ -59,18 +59,18 @@ export function cr(
   }
 }
 
-export function transformMatcher(matcher: RegExp) {
-  return new RegExp(`${matcher.source.replace(/^\^|\$$/g, '')}$`)
+export function transformInputRule(rule: RegExp) {
+  const source = rule.source.replace(/^\^|\$$/g, '')
+  return new RegExp(`^(.+[:-])?${source}$`)
 }
 
-export function parseInput(matcher: RegExp, className: string) {
-  const variantMatcher = transformMatcher(matcher)
+export function parseInput(rule: RegExp, className: string) {
+  const matcher = transformInputRule(rule)
 
-  if (variantMatcher.test(className)) {
-    const matched = className.match(variantMatcher)!
-    const [input, ...matchArray] = matched
-    const rawInput = matched.input!
-    const rawVariant = rawInput.slice(0, -1 * input.length)
+  if (matcher.test(className)) {
+    const matched = className.match(matcher)!
+    const [rawInput, rawVariant = '', ...matchArray] = matched
+    const input = rawInput.slice(rawVariant.length)
 
     return {
       rawInput,
