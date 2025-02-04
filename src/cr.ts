@@ -8,6 +8,8 @@ export function cr(
   rules: CRRule[],
   options: CROptions = {},
 ) {
+  const cache = new Map<string, string>([])
+
   const handlers = rules.map(([matcher, handler, options = {}]) => {
     const { scope = '' } = options
 
@@ -36,6 +38,13 @@ export function cr(
     let index = 0
 
     for (const className of classNames) {
+      const cacheValue = cache.get(className)
+
+      if (!options.debug && cacheValue) {
+        temp.set(cacheValue, className)
+        continue
+      }
+
       let groupKey = className
 
       handlers.some((handler) => {
@@ -53,6 +62,8 @@ export function cr(
         temp.set(`[${index++}]${groupKey}`, groupKey)
       else
         temp.set(groupKey, className)
+
+      cache.set(className, groupKey)
     }
 
     return Array.from(temp.values()).join(' ')
