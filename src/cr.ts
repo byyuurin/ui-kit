@@ -72,15 +72,27 @@ export function cr(
 
 export function transformInputRule(rule: RegExp) {
   const source = rule.source.replace(/^\^|\$$/g, '')
-  return new RegExp(`^(.+[:-])?${source}$`)
+  return new RegExp(`^(.+?[:-])${source}$`)
 }
 
 export function parseInput(rule: RegExp, className: string) {
+  if (rule.test(className)) {
+    const matched = className.match(rule)!
+    const [rawInput, ...matchArray] = matched
+
+    return {
+      rawInput,
+      rawVariant: '',
+      input: rawInput,
+      matchArray,
+    }
+  }
+
   const matcher = transformInputRule(rule)
 
   if (matcher.test(className)) {
     const matched = className.match(matcher)!
-    const [rawInput, rawVariant = '', ...matchArray] = matched
+    const [rawInput, rawVariant, ...matchArray] = matched
     const input = rawInput.slice(rawVariant.length)
 
     return {

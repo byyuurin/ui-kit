@@ -4,7 +4,7 @@ import type { CRRule } from './types'
 
 describe('cr', () => {
   const matcherWithoutTransform = /^bg-(.+)$/
-  const matcherTransformed = /^(.+[:-])?bg-(.+)$/
+  const matcherTransformed = /^(.+?[:-])bg-(.+)$/
 
   describe('matcher transform', () => {
     it('should be same matcher', () => {
@@ -77,12 +77,31 @@ describe('cr', () => {
         },
         { scope: 'bg' },
       ],
+      // _rules/gap
+      [
+        /^(?:flex-|grid-)?gap(?:-([xy]|col|row))?(.+)$/,
+        ([direction]) => {
+          if (direction === 'y' || direction === 'row')
+            return 'row-gap'
+
+          if (direction === 'x' || direction === 'col')
+            return 'column-gap'
+
+          return 'gap'
+        },
+      ],
     ]
 
-    it('test', () => {
-      const merger = cr(rules)
-      const result = merger('border bg-red-100 sm:bg-red/10 bg-blue-200 sm:bg-blue/50')
+    it('merge mode', () => {
+      const merge = cr(rules)
+      const result = merge('border bg-red-100 sm:bg-red/10 bg-blue-200 sm:bg-blue/50')
       expect(result).toMatchInlineSnapshot(`"border bg-blue-200 sm:bg-blue/50"`)
+    })
+
+    it('debug mode', () => {
+      const merge = cr(rules, { debug: true })
+      const result = merge('gap-1 flex-gap-2 grid-gap-x-3 gap4 sm:flex-gap5 md:grid-gap--6')
+      expect(result).toMatchInlineSnapshot(`"gap gap column-gap gap sm:gap md:gap"`)
     })
   })
 })
