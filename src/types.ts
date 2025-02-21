@@ -38,7 +38,6 @@ export type VariantProps<T> = T extends CVReturnType<infer V, infer S, ClassValu
 
 /* CV types
 ---------------------------------------- */
-
 export type CVSlots = Record<string, ClassValue> | undefined
 
 type SlotsName<S extends CVSlots, B extends ClassValue> = B extends undefined
@@ -73,11 +72,9 @@ export type CVCompoundVariants<
   B extends ClassValue,
 > = Array<
   {
-    [K in keyof V]?:
-      | (K extends keyof V ? StringToBoolean<keyof V[K]> : never)
-      | (K extends keyof V ? StringToBoolean<keyof V[K]>[] : never)
+    [K in keyof V]?: MaybeArray<StringToBoolean<keyof V[K]>>
   } & (
-    B extends MaybeArray<string>
+    S extends undefined
       ? ClassProp<SlotsClassValue<S, B> | ClassValue>
       : ClassProp<SlotsClassValue<S, B>>
   )
@@ -87,9 +84,7 @@ export type CVDefaultVariants<
   V extends CVVariants<S>,
   S extends CVSlots,
 > = {
-  [K in keyof V]?: K extends keyof V
-    ? StringToBoolean<keyof V[K]>
-    : never
+  [K in keyof V]?: StringToBoolean<keyof V[K]>
 }
 
 export type CVProps<
