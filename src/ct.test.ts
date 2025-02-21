@@ -101,11 +101,12 @@ describe('ct', () => {
         { type: 'ghost', color: 'red', class: { root: 'border border-red color-red' } },
         { type: 'ghost', color: 'blue', class: { root: 'border border-blue color-blue' } },
       ],
-      // @ts-expect-error for test
       defaultVariants: {
         type: 'default',
         color: 'blue',
       },
+      // @ts-expect-error for test
+      foo: 'bar',
     })
 
     expect(theme).toMatchInlineSnapshot(`
@@ -141,6 +142,10 @@ describe('ct', () => {
             "type": "ghost",
           },
         ],
+        "defaultVariants": {
+          "color": "blue",
+          "type": "default",
+        },
         "slots": {
           "icon": "btn__icon",
           "root": "btn",
