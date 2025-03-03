@@ -1,7 +1,7 @@
 import type { CRRule, CRRuleContext } from './types'
 
 interface CROptions {
-  debug?: boolean
+  debug?: boolean | 'all'
 }
 
 export function cr(
@@ -53,6 +53,7 @@ export function cr(
         continue
       }
 
+      let isValidGroupKey = false
       let groupKey = className
 
       handlers.some((handler) => {
@@ -60,16 +61,20 @@ export function cr(
 
         if (key) {
           groupKey = key
+          isValidGroupKey = true
           return true
         }
 
         return false
       })
 
-      if (options.debug)
-        temp.set(`[${index++}]${groupKey}`, groupKey)
-      else
+      if (options.debug) {
+        const debugInfo = isValidGroupKey ? groupKey : 'unknown'
+        temp.set(`[${index++}]${groupKey}`, options.debug === 'all' ? `[${className}]${debugInfo}` : debugInfo)
+      }
+      else {
         temp.set(groupKey, className)
+      }
 
       cache.set(className, groupKey)
     }
