@@ -8,6 +8,7 @@ export function cr(
   rules: CRRule[],
   options: CROptions = {},
 ) {
+  const tokens = new Map<string, string>([])
   const cache = new Map<string, string>([])
 
   const handlers = rules.map(([matcher, handler, options = {}]) => {
@@ -22,10 +23,17 @@ export function cr(
 
       const data = parseInput(matcher, input)
 
+      if (data && tokens.has(data.input))
+        return resolve(data, tokens.get(data.input)!)
+
       if (data) {
         const { matchArray, ...context } = data
         const value = handler(matchArray, context)
-        return typeof value === 'string' ? resolve(context, value) : null
+
+        if (typeof value === 'string') {
+          tokens.set(context.input, value)
+          return resolve(context, value)
+        }
       }
 
       return null
