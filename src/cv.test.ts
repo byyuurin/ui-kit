@@ -2,7 +2,9 @@ import { describe, expect, it } from 'vitest'
 import { cv } from './cv'
 
 describe('cv', () => {
-  const createVariants = cv()
+  const createVariants = cv([
+    [/bg-(.+)/, () => 'background-color'],
+  ])
 
   it('variants (normal)', () => {
     const ui = createVariants({
@@ -121,5 +123,21 @@ describe('cv', () => {
 
     expect(ui({ type: 'ghost', color: 'red' }).root()).toMatchInlineSnapshot(`"btn__root border border-red color-red"`)
     expect(ui().root({ type: 'ghost', color: 'red' })).toMatchInlineSnapshot(`"btn__root border border-red color-red"`)
+  })
+
+  it('style merge', () => {
+    const ui = createVariants({
+      base: 'btn bg-red',
+    })
+
+    expect(ui({ class: 'bg-blue' })).toMatchInlineSnapshot(`"btn bg-blue"`)
+
+    const uiWithSlots = createVariants({
+      slots: {
+        base: 'btn bg-red',
+      },
+    })
+
+    expect(uiWithSlots().base({ class: 'bg-blue' })).toMatchInlineSnapshot(`"btn bg-blue"`)
   })
 })
