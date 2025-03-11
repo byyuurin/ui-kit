@@ -111,6 +111,22 @@ ui({ class: 'bg-red bg-opacity-50' }) // "p-2 bg-red bg-opacity-50 hover:bg-opac
 
 `cv` offers a powerful way to manage component variants with conditional logic and atomic styling.
 
+## `cx` - A Utility for Merging Class Names
+
+`cx` is a simple utility for merging class names based on different conditions.
+
+### Usage
+
+```js
+import { cx } from '@byyuurin/ui-kit'
+
+cx('btn', 'primary') // "btn primary"
+cx('btn', { primary: true, disabled: false }) // "btn primary"
+cx('btn', ['primary', false && 'disabled']) // "btn primary"
+```
+
+It works with strings, objects, and arrays, making it easy to conditionally combine class names.
+
 ## License
 
 [MIT](./LICENSE) License © 2024-PRESENT [Yuurin](https://github.com/byyurin)

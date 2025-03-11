@@ -1,11 +1,3 @@
-/* eslint-disable ts/no-empty-object-type */
-
-/* clsx types (source: https://github.com/lukeed/clsx/blob/master/clsx.d.ts)
----------------------------------------- */
-type ClassDictionary = Record<string, any>
-type ClassArray = ClassValue[]
-export type ClassValue = ClassArray | ClassDictionary | string | number | bigint | null | boolean | undefined
-
 /* utils
 ---------------------------------------- */
 type MaybeArray<T> = T | T[]
@@ -25,7 +17,9 @@ export type Simplify<T> = T extends Record<string, unknown>
     : T
 
 /* base types
----------------------------------------- */
+  ---------------------------------------- */
+export type ClassValue = MaybeArray<Record<string, any> | string | number | bigint | boolean | null | undefined>
+
 export type ClassProp<V = ClassValue> =
   | { class?: V, className?: never }
   | { class?: never, className?: V }

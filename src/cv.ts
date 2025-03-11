@@ -1,5 +1,5 @@
-import { clsx } from 'clsx'
 import { cr } from './cr'
+import { cx } from './cx'
 import type {
   ClassValue,
   CRRule,
@@ -14,15 +14,11 @@ import type {
 } from './types'
 import { falsyToString, isEmptyObject } from './utils'
 
-function _clsx(...classes: ClassValue[]): string {
-  return clsx(...classes)
-}
-
 export function cv(rules: CRRule[] = []) {
   const crMerge = rules.length > 0 ? cr(rules) : null
 
   const merge = (...classes: ClassValue[]): string => {
-    const merged = _clsx(...classes)
+    const merged = cx(...classes)
     return crMerge ? crMerge(merged) : merged
   }
 
@@ -279,11 +275,11 @@ function getCompoundVariantClassValue(
 
   for (const className of compoundClassNames) {
     if (typeof className === 'string')
-      result.base = _clsx(result.base, className)
+      result.base = cx(result.base, className)
 
     if (typeof className === 'object') {
       for (const [slot, slotClassName] of Object.entries(className as Record<string, ClassValue>))
-        result[slot] = _clsx(result[slot], slotClassName)
+        result[slot] = cx(result[slot], slotClassName)
     }
   }
 
