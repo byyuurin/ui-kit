@@ -1,6 +1,23 @@
 /* utils
 ---------------------------------------- */
-type MaybeArray<T> = T | T[]
+type DepthLimit = [1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+type DepthReduce<N extends number> = N extends keyof DepthLimit ? DepthLimit[N] : 0
+
+export type FlatObjectPath<
+  T,
+  ParentPath extends string = '',
+  Depth extends number = 5,
+> = Depth extends 0
+  ? never
+  : T extends Record<string, any>
+    ? {
+        [TK in keyof T]: T[TK] extends Record<string, any>
+          ? FlatObjectPath<T[TK], ParentPath extends '' ? TK & string : `${ParentPath}.${TK & string}`, DepthReduce<Depth>>
+          : ParentPath extends '' ? TK & string : `${ParentPath}.${TK & string}`
+      }[keyof T]
+    : never
+
+export type MaybeArray<T> = T | T[]
 
 export type ParseString<T, InferValue, TrueType, FalseType = string> = T extends InferValue
   ? TrueType
@@ -191,3 +208,18 @@ export type CRRuleMatcher = (
 export type CRRule =
   | [RegExp, CRRuleMatcher]
   | [RegExp, CRRuleMatcher, CRRuleOptions]
+
+/* i18n types
+---------------------------------------- */
+export type LocaleDirection = 'ltr' | 'rtl'
+
+export interface Locale<M> {
+  name: string
+  code: string
+  /** @default "ltr" */
+  dir?: LocaleDirection
+  messages: M
+}
+
+export type TranslatorOptions = Record<string, string | number>
+export type Translator<M = Record<string, string>> = (path: FlatObjectPath<M> | (string & {}), options?: TranslatorOptions) => string
