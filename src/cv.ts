@@ -12,7 +12,6 @@ import type {
   CVSlots,
   CVVariants,
 } from './types'
-import { falsyToString, isEmptyObject } from './utils'
 
 export function cv(rules: CRRule[] = []) {
   const crMerge = rules.length > 0 ? cr(rules) : null
@@ -139,6 +138,18 @@ function createHandler(
   }
 
   return handler
+}
+
+function isEmptyObject(obj: any) {
+  return !obj || typeof obj !== 'object' || Object.keys(obj).length === 0
+}
+
+function falsyToString(value: any) {
+  return typeof value === 'boolean'
+    ? `${value}`
+    : value === 0
+      ? '0'
+      : value
 }
 
 function getVariantValue(
