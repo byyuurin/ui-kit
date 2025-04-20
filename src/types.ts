@@ -43,7 +43,7 @@ export type ClassProp<V = ClassValue> =
 
 export type VariantProps<T> = T extends CVReturnType<infer V, infer S, ClassValue>
   ? CVDefaultVariants<V, S>
-  : T extends CTReturn<infer V, any, any, ClassValue, infer S>
+  : T extends CVMeta<infer V, any, any, ClassValue, infer S>
     ? CVDefaultVariants<V, S>
     : never
 
@@ -155,30 +155,6 @@ export interface CVHandlerContext<
   props?: (CVProps<V, S> & Record<string, unknown>) | null
   merge: (...classes: ClassValue[]) => string
 }
-
-/* CT types
----------------------------------------- */
-export type CTReturn<
-  V extends CVVariants<S, B>,
-  CV extends CVCompoundVariants<V, S, B>,
-  DV extends CVDefaultVariants<V, S>,
-  B extends ClassValue = undefined,
-  S extends CVSlots = undefined,
-> = B extends MaybeArray<string>
-  ? {
-      base: B extends any[] ? string[] : string
-      slots: S
-      variants: V
-      compoundVariants: CV
-      defaultVariants: DV
-    }
-  : {
-      base: undefined
-      slots: S
-      variants: V
-      compoundVariants: CV
-      defaultVariants: DV
-    }
 
 /* CR types
 ---------------------------------------- */

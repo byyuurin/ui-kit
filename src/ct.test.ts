@@ -105,8 +105,6 @@ describe('ct', () => {
         type: 'default',
         color: 'blue',
       },
-      // @ts-expect-error for test
-      foo: 'bar',
     })
 
     expect(theme).toMatchInlineSnapshot(`

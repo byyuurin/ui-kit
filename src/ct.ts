@@ -1,6 +1,5 @@
 import type {
   ClassValue,
-  CTReturn,
   CVCompoundVariants,
   CVDefaultVariants,
   CVMeta,
@@ -15,9 +14,5 @@ export function ct<
   B extends ClassValue = undefined,
   S extends CVSlots = undefined,
 >(meta: CVMeta<V, CV, DV, B, S>) {
-  const { base, slots, variants, compoundVariants, defaultVariants } = meta
-
-  return Object.fromEntries(
-    Object.entries({ base, slots, variants, compoundVariants, defaultVariants }).filter(([, v]) => !!v),
-  ) as unknown as CTReturn<V, CV, DV, B, S>
+  return meta
 }
