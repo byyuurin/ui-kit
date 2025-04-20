@@ -69,7 +69,6 @@ function createHandler(
 ) {
   const {
     base,
-    variants,
     compoundVariants,
     parts,
     partsRaw,
@@ -77,9 +76,6 @@ function createHandler(
   } = context
 
   const handler: CVHandler<Record<string, any>, any, unknown> = (props) => {
-    if (isEmptyObject(variants) && isEmptyObject(parts))
-      return merge(base, props?.class, props?.className)
-
     if (compoundVariants && !Array.isArray(compoundVariants))
       throw new Error(`The "compoundVariants" prop must be an array. Received: ${typeof compoundVariants}`)
 

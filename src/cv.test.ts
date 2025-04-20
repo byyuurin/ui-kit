@@ -6,6 +6,14 @@ describe('cv', () => {
     [/bg-(.+)/, () => 'background-color'],
   ])
 
+  it('base only', () => {
+    const ui = createVariants({
+      base: 'btn',
+    })
+
+    expect(ui().base()).toMatchInlineSnapshot(`"btn"`)
+  })
+
   it('variants (normal)', () => {
     const ui = createVariants({
       base: 'btn',
@@ -136,7 +144,7 @@ describe('cv', () => {
       base: 'btn bg-red',
     })
 
-    expect(ui({ class: 'bg-blue' })).toMatchInlineSnapshot(`"btn bg-blue"`)
+    expect(ui({ class: 'bg-blue' }).base()).toMatchInlineSnapshot(`"btn bg-blue"`)
 
     const uiWithParts = createVariants({
       parts: {
