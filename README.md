@@ -35,7 +35,7 @@ const ui = createVariants({
   },
 })
 
-ui({ type: 'solid' }) // "p-2 bg-blue color-white"
+ui({ type: 'solid' }).base() // "p-2 bg-blue color-white"
 ```
 
 ### Conditional Variants
@@ -53,7 +53,7 @@ const ui = createVariants({
   ],
 })
 
-ui({ type: 'default', color: 'red' }) // "btn bg-red color-white"
+ui({ type: 'default', color: 'red' }).base() // "btn bg-red color-white"
 ```
 
 ### Slots Support
@@ -105,8 +105,8 @@ const ui = createVariants({
 })
 
 // Example Usage
-ui() // "p-2 bg-blue bg-opacity-80 hover:bg-opacity-100"
-ui({ class: 'bg-red bg-opacity-50' }) // "p-2 bg-red bg-opacity-50 hover:bg-opacity-100"
+ui().base() // "p-2 bg-blue bg-opacity-80 hover:bg-opacity-100"
+ui().base({ class: 'bg-red bg-opacity-50' }) // "p-2 bg-red bg-opacity-50 hover:bg-opacity-100"
 ```
 
 `cv` offers a powerful way to manage component variants with conditional logic and atomic styling.

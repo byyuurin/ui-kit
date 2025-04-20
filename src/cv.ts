@@ -123,19 +123,25 @@ function createHandler(
     }
 
     // normal variants
-    return merge(
-      base,
-      getVariantClassValue({
-        ...context,
-        props,
-      }),
-      getCompoundVariantClassValue({
-        ...context,
-        props,
-      }),
-      props?.class,
-      props?.className,
-    )
+    return {
+      base: (slotProps) => {
+        return merge(
+          base,
+          getVariantClassValue({
+            ...context,
+            props: { ...props, ...slotProps } as any,
+          }),
+          getCompoundVariantClassValue({
+            ...context,
+            props: { ...props, ...slotProps } as any,
+          }),
+          props?.class,
+          props?.className,
+          slotProps?.class,
+          slotProps?.className,
+        )
+      },
+    } satisfies Record<'base', CVHandler<Record<string, any>, any>>
   }
 
   return handler

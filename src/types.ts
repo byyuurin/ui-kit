@@ -117,7 +117,7 @@ export interface CVReturnType<
   B extends ClassValue,
 > {
   (props?: CVProps<V, S>): S extends undefined
-    ? string
+    ? { [K in SlotsName<{}, B>]: CVHandler<V, S> }
     : { [K in keyof S | SlotsName<{}, B>]: CVHandler<V, S> }
 }
 

@@ -27,11 +27,14 @@ describe('cv', () => {
       },
     })
 
-    expect(ui({ class: 'btn-custom' })).toMatchInlineSnapshot(`"btn btn-default btn-custom"`)
+    expect(ui().base({ class: 'btn-custom' })).toMatchInlineSnapshot(`"btn btn-default btn-custom"`)
+    expect(ui({ class: 'btn-custom' }).base()).toMatchInlineSnapshot(`"btn btn-default btn-custom"`)
 
-    expect(ui({ disabled: true })).toMatchInlineSnapshot(`"btn btn-default btn--disabled"`)
+    expect(ui().base({ disabled: true })).toMatchInlineSnapshot(`"btn btn-default btn--disabled"`)
+    expect(ui({ disabled: true }).base()).toMatchInlineSnapshot(`"btn btn-default btn--disabled"`)
 
-    expect(ui({ size: 'sm' })).toMatchInlineSnapshot(`"btn btn-default text-sm"`)
+    expect(ui().base({ size: 'sm' })).toMatchInlineSnapshot(`"btn btn-default text-sm"`)
+    expect(ui({ size: 'sm' }).base()).toMatchInlineSnapshot(`"btn btn-default text-sm"`)
   })
 
   it('variants (slots)', () => {
@@ -89,8 +92,11 @@ describe('cv', () => {
       ],
     })
 
-    expect(ui({ type: 'default', color: 'red' })).toMatchInlineSnapshot(`"btn bg-red color-white"`)
-    expect(ui({ type: 'ghost', color: 'red' })).toMatchInlineSnapshot(`"btn border border-red color-red"`)
+    expect(ui().base({ type: 'default', color: 'red' })).toMatchInlineSnapshot(`"btn bg-red color-white"`)
+    expect(ui({ type: 'default', color: 'red' }).base()).toMatchInlineSnapshot(`"btn bg-red color-white"`)
+
+    expect(ui().base({ type: 'ghost', color: 'red' })).toMatchInlineSnapshot(`"btn border border-red color-red"`)
+    expect(ui({ type: 'ghost', color: 'red' }).base()).toMatchInlineSnapshot(`"btn border border-red color-red"`)
   })
 
   it('variants (slots-compound)', () => {
