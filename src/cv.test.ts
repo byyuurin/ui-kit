@@ -37,9 +37,9 @@ describe('cv', () => {
     expect(ui({ size: 'sm' }).base()).toMatchInlineSnapshot(`"btn btn-default text-sm"`)
   })
 
-  it('variants (slots)', () => {
+  it('variants (parts)', () => {
     const ui = createVariants({
-      slots: {
+      parts: {
         root: 'btn',
         icon: 'btn__icon',
       },
@@ -99,10 +99,10 @@ describe('cv', () => {
     expect(ui({ type: 'ghost', color: 'red' }).base()).toMatchInlineSnapshot(`"btn border border-red color-red"`)
   })
 
-  it('variants (slots-compound)', () => {
+  it('variants (parts-compound)', () => {
     const ui = createVariants({
       base: 'btn',
-      slots: {
+      parts: {
         root: 'btn__root',
         icon: 'btn__icon',
       },
@@ -138,12 +138,12 @@ describe('cv', () => {
 
     expect(ui({ class: 'bg-blue' })).toMatchInlineSnapshot(`"btn bg-blue"`)
 
-    const uiWithSlots = createVariants({
-      slots: {
+    const uiWithParts = createVariants({
+      parts: {
         base: 'btn bg-red',
       },
     })
 
-    expect(uiWithSlots().base({ class: 'bg-blue' })).toMatchInlineSnapshot(`"btn bg-blue"`)
+    expect(uiWithParts().base({ class: 'bg-blue' })).toMatchInlineSnapshot(`"btn bg-blue"`)
   })
 })

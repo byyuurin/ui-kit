@@ -16,7 +16,7 @@ npm i @byyuurin/ui-kit
 
 ## `cv` - A Utility for Creating Component Variants
 
-`cv` simplifies defining UI component variants with conditional styling and slot support.
+`cv` simplifies defining UI component variants with conditional styling and parts support.
 
 ### Basic Usage
 
@@ -56,11 +56,11 @@ const ui = createVariants({
 ui({ type: 'default', color: 'red' }).base() // "btn bg-red color-white"
 ```
 
-### Slots Support
+### Parts Support
 
 ```js
 const ui = createVariants({
-  slots: {
+  parts: {
     base: 'p-2 flex items-center',
     icon: 'color-white',
   },

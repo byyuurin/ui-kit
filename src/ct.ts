@@ -2,17 +2,22 @@ import type {
   ClassValue,
   CVCompoundVariants,
   CVDefaultVariants,
-  CVMeta,
-  CVSlots,
+  CVParts,
+  CVScope,
+  CVScopeMeta,
   CVVariants,
 } from './types'
 
 export function ct<
-  V extends CVVariants<S, B>,
-  CV extends CVCompoundVariants<V, S, B>,
-  DV extends CVDefaultVariants<V, S>,
+  V extends CVVariants<P, B>,
+  CV extends CVCompoundVariants<V, P, B>,
+  DV extends CVDefaultVariants<V, P>,
   B extends ClassValue = undefined,
-  S extends CVSlots = undefined,
->(meta: CVMeta<V, CV, DV, B, S>) {
-  return meta
+  P extends CVParts = undefined,
+>(scope: CVScope<V, CV, DV, B, P>) {
+  const { base, parts, variants, compoundVariants, defaultVariants } = scope
+
+  return Object.fromEntries(
+    Object.entries({ base, parts, variants, compoundVariants, defaultVariants }).filter(([, v]) => !!v),
+  ) as unknown as CVScopeMeta<V, CV, DV, B, P>
 }

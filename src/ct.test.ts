@@ -5,7 +5,7 @@ describe('ct', () => {
   it('should return same with input', () => {
     const theme = ct({
       base: 'btn',
-      slots: {
+      parts: {
         root: 'btn__root',
         icon: 'btn__icon',
       },
@@ -60,7 +60,7 @@ describe('ct', () => {
             "type": "ghost",
           },
         ],
-        "slots": {
+        "parts": {
           "icon": "btn__icon",
           "root": "btn__root",
         },
@@ -81,7 +81,7 @@ describe('ct', () => {
   it('should ignore defaultVariants in the input', () => {
     const theme = ct({
       base: 'btn-base',
-      slots: {
+      parts: {
         root: 'btn',
         icon: 'btn__icon',
       },
@@ -144,7 +144,7 @@ describe('ct', () => {
           "color": "blue",
           "type": "default",
         },
-        "slots": {
+        "parts": {
           "icon": "btn__icon",
           "root": "btn",
         },

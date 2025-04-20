@@ -41,97 +41,97 @@ export type ClassProp<V = ClassValue> =
   | { class?: V, className?: never }
   | { class?: never, className?: V }
 
-export type VariantProps<T> = T extends CVReturnType<infer V, infer S, ClassValue>
-  ? CVDefaultVariants<V, S>
-  : T extends CVMeta<infer V, any, any, ClassValue, infer S>
-    ? CVDefaultVariants<V, S>
+export type VariantProps<T> = T extends CVReturnType<infer V, infer P, ClassValue>
+  ? CVDefaultVariants<V, P>
+  : T extends CVScope<infer V, any, any, ClassValue, infer P>
+    ? CVDefaultVariants<V, P>
     : never
 
 /* CV types
 ---------------------------------------- */
-export type CVSlots = Record<string, ClassValue> | undefined
+export type CVParts = Record<string, ClassValue> | undefined
 
-type SlotsName<S extends CVSlots, B extends ClassValue> = B extends undefined
-  ? keyof S
-  : keyof S | 'base'
+type PartsName<P extends CVParts, B extends ClassValue> = B extends undefined
+  ? keyof P
+  : keyof P | 'base'
 
-type SlotsClassValue<S extends CVSlots, B extends ClassValue> = {
-  [K in SlotsName<S, B>]?: ClassValue;
+type PartsClassValue<S extends CVParts, B extends ClassValue> = {
+  [K in PartsName<S, B>]?: ClassValue;
 }
 
 export type CVVariantsDefault<
-  S extends CVSlots,
+  P extends CVParts,
   B extends ClassValue,
-> = S extends undefined
+> = P extends undefined
   ? {}
   : {
-      [key: string]: {
-        [key: string]: S extends CVSlots
-          ? SlotsClassValue<S, B> | null | ''
+      [variantName: string]: {
+        [variantValue: string]: P extends CVParts
+          ? PartsClassValue<P, B> | null | ''
           : ClassValue
       }
     }
 
 export type CVVariants<
-  S extends CVSlots,
+  P extends CVParts,
   B extends ClassValue | undefined = undefined,
-> = CVVariantsDefault<S, B>
+> = CVVariantsDefault<P, B>
 
 export type CVCompoundVariants<
-  V extends CVVariants<S>,
-  S extends CVSlots,
+  V extends CVVariants<P>,
+  P extends CVParts,
   B extends ClassValue,
 > = Array<
   {
     [K in keyof V]?: MaybeArray<StringToBoolean<keyof V[K]>>
   } & (
-    S extends undefined
-      ? ClassProp<SlotsClassValue<S, B> | ClassValue>
-      : ClassProp<SlotsClassValue<S, B>>
+    P extends undefined
+      ? ClassProp<PartsClassValue<P, B> | ClassValue>
+      : ClassProp<PartsClassValue<P, B>>
   )
 >
 
 export type CVDefaultVariants<
-  V extends CVVariants<S>,
-  S extends CVSlots,
+  V extends CVVariants<P>,
+  P extends CVParts,
 > = {
   [K in keyof V]?: StringToBoolean<keyof V[K]>
 }
 
 export type CVProps<
-  V extends CVVariants<S>,
-  S extends CVSlots,
+  V extends CVVariants<P>,
+  P extends CVParts,
 > = [keyof V] extends string[]
   ? { [K in keyof V]?: StringToBoolean<keyof V[K]> } & ClassProp
   : ClassProp
 
 export type CVHandler<
-  V extends CVVariants<S>,
-  S extends CVSlots,
+  V extends CVVariants<P>,
+  P extends CVParts,
   T = string,
-> = (props?: CVProps<V, S>) => T
+> = (props?: CVProps<V, P>) => T
 
 export interface CVReturnType<
-  V extends CVVariants<S>,
-  S extends CVSlots,
+  V extends CVVariants<P>,
+  P extends CVParts,
   B extends ClassValue,
 > {
-  (props?: CVProps<V, S>): S extends undefined
-    ? { [K in SlotsName<{}, B>]: CVHandler<V, S> }
-    : { [K in keyof S | SlotsName<{}, B>]: CVHandler<V, S> }
+  (props?: CVProps<V, P>): P extends undefined
+    ? { [K in PartsName<{}, B>]: CVHandler<V, P> }
+    : { [K in keyof P | PartsName<{}, B>]: CVHandler<V, P> }
 }
 
-export interface CVMeta<
-  V extends CVVariants<S, B>,
-  CV extends CVCompoundVariants<V, S, B>,
-  DV extends CVDefaultVariants<V, S>,
+export interface CVScope<
+  V extends CVVariants<P, B>,
+  CV extends CVCompoundVariants<V, P, B>,
+  DV extends CVDefaultVariants<V, P>,
   B extends ClassValue = undefined,
-  S extends CVSlots = undefined,
+  P extends CVParts = undefined,
 > {
   /** Base allows you to set a base class for a component. */
   base?: B
-  /** Slots allow you to separate a component into multiple parts. */
-  slots?: S
+  /** Parts allow you to separate a component into multiple parts. */
+  parts?: P
   /** Variants allow you to create multiple versions of the same component. */
   variants?: V
   /** Compound variants allow you to apply classes to multiple variants at once. */
@@ -140,19 +140,36 @@ export interface CVMeta<
   defaultVariants?: DV
 }
 
+export type CVScopeMeta<
+  V extends CVVariants<P, B>,
+  CV extends CVCompoundVariants<V, P, B>,
+  DV extends CVDefaultVariants<V, P>,
+  B extends ClassValue = undefined,
+  P extends CVParts = undefined,
+> = (
+  B extends MaybeArray<string>
+    ? { base: B extends any[] ? string[] : string }
+    : { base: undefined }
+) & {
+  parts: P
+  variants: V
+  compoundVariants: CV
+  defaultVariants: DV
+}
+
 export interface CVHandlerContext<
-  V extends CVVariants<S, B> = any,
-  S extends CVSlots = CVSlots,
+  V extends CVVariants<P, B> = any,
+  P extends CVParts = CVParts,
   B extends ClassValue = ClassValue,
 > {
-  slots: B extends undefined
-    ? S
-    : S & { base: B extends any[] ? string[] : string }
+  parts: B extends undefined
+    ? P
+    : P & { base: B extends any[] ? string[] : string }
   variants: V
-  defaultVariants: CVDefaultVariants<V, S>
-  compoundVariants: CVCompoundVariants<V, S, B>
-  slotProps?: (CVProps<V, S> & Record<string, unknown>) | null
-  props?: (CVProps<V, S> & Record<string, unknown>) | null
+  defaultVariants: CVDefaultVariants<V, P>
+  compoundVariants: CVCompoundVariants<V, P, B>
+  props?: (CVProps<V, P> & Record<string, unknown>) | null
+  propsOverrides?: (CVProps<V, P> & Record<string, unknown>) | null
   merge: (...classes: ClassValue[]) => string
 }
 

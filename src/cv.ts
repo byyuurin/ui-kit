@@ -7,9 +7,9 @@ import type {
   CVDefaultVariants,
   CVHandler,
   CVHandlerContext,
-  CVMeta,
+  CVParts,
   CVReturnType,
-  CVSlots,
+  CVScope,
   CVVariants,
 } from './types'
 import { falsyToString, isEmptyObject } from './utils'
@@ -23,28 +23,28 @@ export function cv(rules: CRRule[] = []) {
   }
 
   return <
-    V extends CVVariants<S, B>,
-    CV extends CVCompoundVariants<V, S, B>,
-    DV extends CVDefaultVariants<V, S>,
+    V extends CVVariants<P, B>,
+    CV extends CVCompoundVariants<V, P, B>,
+    DV extends CVDefaultVariants<V, P>,
     B extends ClassValue = undefined,
-    S extends CVSlots = undefined,
+    P extends CVParts = undefined,
   >(
-    meta: CVMeta<V, CV, DV, B, S> = {},
-  ): CVReturnType<V, S, B> => {
+    scope: CVScope<V, CV, DV, B, P> = {},
+  ): CVReturnType<V, P, B> => {
     const {
       base,
-      slots: slotsRaw = {},
+      parts: partsRaw = {},
       variants = {},
       compoundVariants = [] as unknown as CV,
       defaultVariants = {},
-    } = meta
+    } = scope
 
-    const slots: NonNullable<CVSlots> = isEmptyObject(slotsRaw)
+    const parts: NonNullable<CVParts> = isEmptyObject(partsRaw)
       ? {}
-      : { ...slotsRaw, base: [base, slotsRaw.base] }
+      : { ...partsRaw, base: [base, partsRaw.base] }
 
     const context: CVHandlerContext = {
-      slots,
+      parts,
       variants,
       compoundVariants: compoundVariants as any,
       defaultVariants,
@@ -54,30 +54,30 @@ export function cv(rules: CRRule[] = []) {
     const handler = createHandler({
       ...context,
       base,
-      slotsRaw,
+      partsRaw,
     })
 
-    return handler as unknown as CVReturnType<V, S, B>
+    return handler as unknown as CVReturnType<V, P, B>
   }
 }
 
 function createHandler(
   context: CVHandlerContext & {
     base: ClassValue
-    slotsRaw: CVSlots
+    partsRaw: CVParts
   },
 ) {
   const {
     base,
     variants,
     compoundVariants,
-    slots,
-    slotsRaw,
+    parts,
+    partsRaw,
     merge,
   } = context
 
   const handler: CVHandler<Record<string, any>, any, unknown> = (props) => {
-    if (isEmptyObject(variants) && isEmptyObject(slots))
+    if (isEmptyObject(variants) && isEmptyObject(parts))
       return merge(base, props?.class, props?.className)
 
     if (compoundVariants && !Array.isArray(compoundVariants))
@@ -90,55 +90,55 @@ function createHandler(
         nonUndefinedProps[prop] = props[prop]
     }
 
-    // with slots
-    if (!isEmptyObject(slotsRaw)) {
-      const slotsHandlers: Record<string, CVHandler<Record<string, any>, any>> = {}
+    // with parts
+    if (!isEmptyObject(partsRaw)) {
+      const partsHandlers: Record<string, CVHandler<Record<string, any>, any>> = {}
 
-      if (typeof slots === 'object' && !isEmptyObject(slots)) {
-        for (const slotName of Object.keys(slots)) {
-          slotsHandlers[slotName] = (slotProps) => {
+      if (typeof parts === 'object' && !isEmptyObject(parts)) {
+        for (const partName of Object.keys(parts)) {
+          partsHandlers[partName] = (propsOverrides) => {
             return merge(
-              slots[slotName],
+              parts[partName],
               getVariantClassValue({
                 ...context,
                 props,
-                slotName,
-                slotProps,
+                partName,
+                propsOverrides,
               }),
               getCompoundVariantClassValue({
                 ...context,
                 props,
-                slotName,
-                slotProps,
+                partName,
+                propsOverrides,
               }),
-              ...slotName === 'base' ? [props?.class, props?.className] : [],
-              slotProps?.class,
-              slotProps?.className,
+              ...partName === 'base' ? [props?.class, props?.className] : [],
+              propsOverrides?.class,
+              propsOverrides?.className,
             )
           }
         }
 
-        return slotsHandlers
+        return partsHandlers
       }
     }
 
     // normal variants
     return {
-      base: (slotProps) => {
+      base: (propsOverrides) => {
         return merge(
           base,
           getVariantClassValue({
             ...context,
-            props: { ...props, ...slotProps } as any,
+            props: { ...props, ...propsOverrides } as any,
           }),
           getCompoundVariantClassValue({
             ...context,
-            props: { ...props, ...slotProps } as any,
+            props: { ...props, ...propsOverrides } as any,
           }),
           props?.class,
           props?.className,
-          slotProps?.class,
-          slotProps?.className,
+          propsOverrides?.class,
+          propsOverrides?.className,
         )
       },
     } satisfies Record<'base', CVHandler<Record<string, any>, any>>
@@ -154,7 +154,7 @@ function getVariantValue(
     vk,
     variants,
     defaultVariants,
-    slotProps = null,
+    propsOverrides = null,
     props = null,
   } = context
 
@@ -163,7 +163,7 @@ function getVariantValue(
   if (!variantConfig || isEmptyObject(variantConfig))
     return null
 
-  const variantProp = slotProps?.[vk] ?? props?.[vk]
+  const variantProp = propsOverrides?.[vk] ?? props?.[vk]
 
   if (variantProp === null)
     return null
@@ -179,14 +179,14 @@ function getVariantValue(
 }
 
 function getVariantClassValue(
-  context: CVHandlerContext & { slotName?: string },
+  context: CVHandlerContext & { partName?: string },
 ) {
-  const { slotName, variants } = context
+  const { partName, variants } = context
 
   if (!variants)
     return null
 
-  if (!slotName) {
+  if (!partName) {
     const result = Object.keys(variants).map((vk) => getVariantValue({ vk, ...context }))
     return result
   }
@@ -200,9 +200,9 @@ function getVariantClassValue(
     const variantValue = getVariantValue({ vk, ...context })
 
     const value
-      = slotName === 'base' && typeof variantValue === 'string'
+      = partName === 'base' && typeof variantValue === 'string'
         ? variantValue
-        : variantValue && (variantValue as any)[slotName]
+        : variantValue && (variantValue as any)[partName]
 
     if (value)
       values.push(value)
@@ -212,14 +212,14 @@ function getVariantClassValue(
 }
 
 function getCompoundVariantClassValue(
-  context: CVHandlerContext & { slotName?: string },
+  context: CVHandlerContext & { partName?: string },
 ) {
   const {
     compoundVariants,
     defaultVariants,
-    slotProps = null,
     props = null,
-    slotName,
+    propsOverrides = null,
+    partName,
   } = context
 
   const nonUndefinedProps: Record<string, unknown> = {}
@@ -229,10 +229,10 @@ function getCompoundVariantClassValue(
       nonUndefinedProps[prop] = props[prop]
   }
 
-  const getCompleteProps = (slotProps: Record<string, any>) => ({
+  const getCompleteProps = (propsOverrides: Record<string, any>) => ({
     ...defaultVariants,
     ...nonUndefinedProps,
-    ...slotProps,
+    ...propsOverrides,
   })
 
   const compoundClassNames: any[] = []
@@ -247,7 +247,7 @@ function getCompoundVariantClassValue(
     let isValid = true
 
     for (const [key, value] of Object.entries(variantOptions)) {
-      const completePropsValue = getCompleteProps(slotProps ?? {})[key]
+      const completePropsValue = getCompleteProps(propsOverrides ?? {})[key]
 
       if (Array.isArray(value)) {
         if (!value.includes(completePropsValue as string)) {
@@ -274,7 +274,7 @@ function getCompoundVariantClassValue(
     }
   }
 
-  if (!slotName || !Array.isArray(compoundClassNames))
+  if (!partName || !Array.isArray(compoundClassNames))
     return compoundClassNames
 
   const result: Record<string, ClassValue> = {}
@@ -284,10 +284,10 @@ function getCompoundVariantClassValue(
       result.base = cx(result.base, className)
 
     if (typeof className === 'object') {
-      for (const [slot, slotClassName] of Object.entries(className as Record<string, ClassValue>))
-        result[slot] = cx(result[slot], slotClassName)
+      for (const [part, partClassName] of Object.entries(className as Record<string, ClassValue>))
+        result[part] = cx(result[part], partClassName)
     }
   }
 
-  return result[slotName]
+  return result[partName]
 }
