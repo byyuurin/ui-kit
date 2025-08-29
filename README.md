@@ -129,7 +129,7 @@ It works with strings, objects, and arrays, making it easy to conditionally comb
 
 ## License
 
-[MIT](./LICENSE) License © 2024-PRESENT [Yuurin](https://github.com/byyurin)
+[MIT](./LICENSE) License © 2024-PRESENT [Yuurin](https://github.com/byyuurin)
 
 <!-- Badges -->
 
