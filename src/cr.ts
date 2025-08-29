@@ -4,7 +4,7 @@ interface CROptions {
   debug?: boolean | 'all'
 }
 
-export function cr(
+export function createCR(
   rules: CRRule[],
   options: CROptions = {},
 ) {

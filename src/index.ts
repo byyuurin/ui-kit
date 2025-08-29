@@ -1,4 +1,4 @@
-export { cr } from './cr'
+export { createCR } from './cr'
 export { ct } from './ct'
 export { createCV, cv } from './cv'
 export { cx } from './cx'

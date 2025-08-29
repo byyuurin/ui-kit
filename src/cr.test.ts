@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { cr, parseInput, transformInputRule } from './cr'
+import { createCR, parseInput, transformInputRule } from './cr'
 import type { CRRule } from './types'
 
 describe('cr', () => {
@@ -93,14 +93,14 @@ describe('cr', () => {
     ]
 
     it('merge mode', () => {
-      const merge = cr(rules)
-      const result = merge('border bg-red-100 sm:bg-red/10 bg-blue-200 sm:bg-blue/50')
+      const cr = createCR(rules)
+      const result = cr('border bg-red-100 sm:bg-red/10 bg-blue-200 sm:bg-blue/50')
       expect(result).toMatchInlineSnapshot(`"border bg-blue-200 sm:bg-blue/50"`)
     })
 
     it('debug mode', () => {
-      const merge = cr(rules, { debug: true })
-      const result = merge('gap-1 flex-gap-2 grid-gap-x-3 gap4 sm:flex-gap5 md:grid-gap--6')
+      const cr = createCR(rules, { debug: true })
+      const result = cr('gap-1 flex-gap-2 grid-gap-x-3 gap4 sm:flex-gap5 md:grid-gap--6')
       expect(result).toMatchInlineSnapshot(`"gap gap column-gap gap sm:gap md:gap"`)
     })
   })

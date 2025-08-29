@@ -1,14 +1,14 @@
 import { describe, expect, it } from 'vitest'
-import { cr } from './cr'
+import { createCR } from './cr'
 import { createCV } from './cv'
 import { cx } from './cx'
 
 describe('cv', () => {
-  const crMerge = cr([
+  const cr = createCR([
     [/bg-(.+)/, () => 'background-color'],
   ])
 
-  const cv = createCV((...classValue) => crMerge(cx(...classValue)))
+  const cv = createCV((...classValue) => cr(cx(...classValue)))
 
   it('base only', () => {
     const ui = cv({

@@ -87,9 +87,9 @@ const ui = cv(theme)
 ### Custom Merge Rules
 
 ```js
-import { cr, createCV, cx } from '@byyuurin/ui-kit'
+import { createCR, createCV, cx } from '@byyuurin/ui-kit'
 
-const cvMerge = cr([
+const cr = createCR([
   [/^bg-(.+)$/, ([type]) => {
     if (/^op(?:acity)?-?(.+)$/.test(type))
       return 'opacity'
@@ -98,7 +98,7 @@ const cvMerge = cr([
   }],
 ])
 
-const cv = createCV((...classValues) => crMerge(cx(...classValues)))
+const cv = createCV((...classValues) => cr(cx(...classValues)))
 
 // Define UI variants
 const ui = cv({
