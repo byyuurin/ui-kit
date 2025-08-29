@@ -1,13 +1,17 @@
 import { describe, expect, it } from 'vitest'
-import { cv } from './cv'
+import { cr } from './cr'
+import { createCV } from './cv'
+import { cx } from './cx'
 
 describe('cv', () => {
-  const createVariants = cv([
+  const crMerge = cr([
     [/bg-(.+)/, () => 'background-color'],
   ])
 
+  const cv = createCV((...classValue) => crMerge(cx(...classValue)))
+
   it('base only', () => {
-    const ui = createVariants({
+    const ui = cv({
       base: 'btn',
     })
 
@@ -15,7 +19,7 @@ describe('cv', () => {
   })
 
   it('variants (normal)', () => {
-    const ui = createVariants({
+    const ui = cv({
       base: 'btn',
       variants: {
         type: {
@@ -46,7 +50,7 @@ describe('cv', () => {
   })
 
   it('variants (parts)', () => {
-    const ui = createVariants({
+    const ui = cv({
       parts: {
         root: 'btn',
         icon: 'btn__icon',
@@ -80,7 +84,7 @@ describe('cv', () => {
   })
 
   it('variants (normal-compound)', () => {
-    const ui = createVariants({
+    const ui = cv({
       base: 'btn',
       variants: {
         type: {
@@ -108,7 +112,7 @@ describe('cv', () => {
   })
 
   it('variants (parts-compound)', () => {
-    const ui = createVariants({
+    const ui = cv({
       base: 'btn',
       parts: {
         root: 'btn__root',
@@ -140,13 +144,13 @@ describe('cv', () => {
   })
 
   it('style merge', () => {
-    const ui = createVariants({
+    const ui = cv({
       base: 'btn bg-red',
     })
 
     expect(ui({ class: 'bg-blue' }).base()).toMatchInlineSnapshot(`"btn bg-blue"`)
 
-    const uiWithParts = createVariants({
+    const uiWithParts = cv({
       parts: {
         base: 'btn bg-red',
       },

@@ -1,12 +1,11 @@
-import { cr } from './cr'
 import { cx } from './cx'
 import type {
   ClassValue,
-  CRRule,
   CVCompoundVariants,
   CVDefaultVariants,
   CVHandler,
   CVHandlerContext,
+  CVMerger,
   CVParts,
   CVReturnType,
   CVScope,
@@ -14,12 +13,11 @@ import type {
 } from './types'
 import { falsyToString, isEmptyObject } from './utils'
 
-export function cv(rules: CRRule[] = []) {
-  const crMerge = rules.length > 0 ? cr(rules) : null
-
-  const merge = (...classes: ClassValue[]): string => {
-    const merged = cx(...classes)
-    return crMerge ? crMerge(merged) : merged
+export function createCV(cvMerger?: CVMerger) {
+  const merge = (...classValues: ClassValue[]): string => {
+    return cvMerger
+      ? cvMerger(...classValues)
+      : cx(...classValues)
   }
 
   return <
@@ -60,6 +58,8 @@ export function cv(rules: CRRule[] = []) {
     return handler as unknown as CVReturnType<V, P, B>
   }
 }
+
+export const cv = createCV()
 
 function createHandler(
   context: CVHandlerContext & {

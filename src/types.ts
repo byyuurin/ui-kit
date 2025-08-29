@@ -49,6 +49,8 @@ export type VariantProps<T> = T extends CVReturnType<infer V, infer P, ClassValu
 
 /* CV types
 ---------------------------------------- */
+export type CVMerger = (...classValues: ClassValue[]) => string
+
 export type CVParts = Record<string, ClassValue> | undefined
 
 type PartsName<P extends CVParts, B extends ClassValue> = B extends undefined

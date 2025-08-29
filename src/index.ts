@@ -1,6 +1,6 @@
 export { cr } from './cr'
 export { ct } from './ct'
-export { cv } from './cv'
+export { createCV, cv } from './cv'
 export { cx } from './cx'
 export * from './i18n'
 export * from './types'

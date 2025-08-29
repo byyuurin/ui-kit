@@ -23,9 +23,7 @@ npm i @byyuurin/ui-kit
 ```js
 import { cv } from '@byyuurin/ui-kit'
 
-const createVariants = cv()
-
-const ui = createVariants({
+const ui = cv({
   base: 'p-2',
   variants: {
     type: {
@@ -41,7 +39,7 @@ ui({ type: 'solid' }).base() // "p-2 bg-blue color-white"
 ### Conditional Variants
 
 ```js
-const ui = createVariants({
+const ui = cv({
   base: 'btn',
   variants: {
     type: { default: '', ghost: '' },
@@ -59,7 +57,7 @@ ui({ type: 'default', color: 'red' }).base() // "btn bg-red color-white"
 ### Parts Support
 
 ```js
-const ui = createVariants({
+const ui = cv({
   parts: {
     base: 'p-2 flex items-center',
     icon: 'color-white',
@@ -83,14 +81,15 @@ You can define a theme with `ct` and pass it to `cv`:
 import { ct, cv } from '@byyuurin/ui-kit'
 
 const theme = ct({ base: 'p-2', variants: { type: { solid: 'bg-blue' } } })
-const createVariants = cv()
-const ui = createVariants(theme)
+const ui = cv(theme)
 ```
 
 ### Custom Merge Rules
 
 ```js
-const createVariants = cv([
+import { cr, createCV, cx } from '@byyuurin/ui-kit'
+
+const cvMerge = cr([
   [/^bg-(.+)$/, ([type]) => {
     if (/^op(?:acity)?-?(.+)$/.test(type))
       return 'opacity'
@@ -99,8 +98,10 @@ const createVariants = cv([
   }],
 ])
 
+const cv = createCV((...classValues) => crMerge(cx(...classValues)))
+
 // Define UI variants
-const ui = createVariants({
+const ui = cv({
   base: 'p-2 bg-blue bg-opacity-80 hover:bg-opacity-100',
 })
 
