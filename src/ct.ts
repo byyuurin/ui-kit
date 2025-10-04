@@ -18,6 +18,6 @@ export function ct<
   const { base, parts, variants, compoundVariants, defaultVariants } = scope
 
   return Object.fromEntries(
-    Object.entries({ base, parts, variants, compoundVariants, defaultVariants }).filter(([, v]) => !!v),
+    Object.entries({ base, parts, variants, compoundVariants, defaultVariants }).filter(([, v]) => v != null),
   ) as unknown as CVScopeMeta<V, CV, DV, B, P>
 }
